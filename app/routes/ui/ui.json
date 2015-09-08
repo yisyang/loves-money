@@ -1,0 +1,18 @@
+{
+  "subdomain": "",
+  "controllerPath": "controllers/ui",
+  "viewPath": "views/ui",
+  "routesGroups": [
+    {
+      "controller": "index.js",
+      "prefix": "/",
+      "routes": [
+        {
+          "method": "get",
+          "url": "/",
+          "handler": "index"
+        }
+      ]
+    }
+  ]
+}

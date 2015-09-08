@@ -1,0 +1,31 @@
+body {
+  background-color: #fafafa;
+}
+i.icon.green {
+  color: #008000;
+}
+i.icon.red {
+  color: #f00;
+}
+.page-container >.header {
+  height: 5em;
+}
+.page-container >.footer>.sticky {
+  width: 100%;
+}
+.ui.button.vertical-align-middle {
+  vertical-align: middle;
+}
+.ui.footer.segment {
+  margin: 2em 0 0 0;
+}
+.ui.inverted.menu,
+.ui.inverted.segment {
+  background-color: #004f6e;
+}
+.ui.menu .item img.logo {
+  margin-right: 1.5em;
+}
+.wireframe {
+  margin-top: 2em;
+}

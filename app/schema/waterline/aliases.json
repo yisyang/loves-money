@@ -1,0 +1,43 @@
+{
+  "tableName": "aliases",
+  "identity": "alias",
+  "connection": "lovesMoney",
+  "attributes": {
+    "src_name": {
+      "type": "string",
+      "unique": true,
+      "required": true,
+      "notNull": true
+    },
+    "dest_domain": {
+      "type": "string",
+      "unique": true,
+      "required": true,
+      "notNull": true
+    },
+    "dest_email": {
+      "type": "email",
+      "unique": true,
+      "required": true,
+      "notNull": true
+    },
+    "incidents": {
+      "type": "integer",
+      "defaultsTo": 0
+    },
+    "visits": {
+      "type": "integer",
+      "size": 64,
+      "defaultsTo": 0
+    },
+    "customer_secret_hash": {
+      "type": "string",
+      "required": true,
+      "notNull": true
+    },
+    "alias_secret": "string",
+    "customer_id": {
+      "model": "customer"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "tableName": "virtual_aliases",
+  "identity": "virtual_alias",
+  "connection": "mailServer",
+  "autoCreatedAt": false,
+  "autoUpdatedAt": false,
+  "attributes": {
+    "domain_id": {
+      "type": "integer",
+      "required": true,
+      "index": true,
+      "notNull": true
+    },
+    "source": {
+      "type": "email",
+      "size": 100,
+      "required": true,
+      "notNull": true
+    },
+    "destination": {
+      "type": "email",
+      "size": 100,
+      "required": true,
+      "notNull": true
+    }
+  }
+}

@@ -1,0 +1,24 @@
+### Note:
+### Remove all sections that hide the real app when using CC for real project
+
+# Only hide sensitive material
+/config/*
+/newrelic.js
+
+# Ignore IDE files
+/.idea/
+
+# Ignore NPM files
+/build/
+/node_modules/
+
+# Ignore bower files
+/public/vendor/
+
+# Ignore logs and shell files from root
+/logs/*
+/*.log
+/*.sh
+
+# Ignore any other files not needed in core
+*.map

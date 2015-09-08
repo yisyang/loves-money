@@ -1,0 +1,49 @@
+{
+	'subdomain': 'api'
+	'controllerPath': 'controllers/api'
+	'viewPath': 'views/api'
+	'routesGroups': [
+		{
+			'controller': 'index.js'
+			'prefix': '/'
+			'routes': [
+				{
+					'method': 'get'
+					'url': '/'
+					'handler': 'index'
+				}
+			]
+		}
+		{
+			'controller': 'aliases.js'
+			'prefix': '/aliases'
+			'routes': [
+				{
+					'method': 'get'
+					'url': '/'
+					'handler': 'index'
+				}
+				{
+					'method': 'get'
+					'url': '/:alias'
+					'handler': 'get'
+				}
+				{
+					'method': 'post'
+					'url': '/'
+					'handler': 'create'
+				}
+				{
+					'method': 'delete'
+					'url': '/_all'
+					'handler': 'truncate'
+				}
+				{
+					'method': 'delete'
+					'url': '/:alias'
+					'handler': 'delete'
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,18 @@
+extends layout
+
+block content
+	h1= error.message
+	h2= error.status
+	p An error happened, but here's some ASCII to lighten your mood
+	pre
+		|  _______________
+		| /  moo---       \
+		| \          d++  /
+		|  ---------------
+		|         \   ^__^
+		|          \  (oo)\_______
+		|             (__)\       )\/\
+		|                 ||----w |
+		|                 ||     ||
+	a(href="javascript:history.go(-1)") Go Back
+	pre #{error.stack}
