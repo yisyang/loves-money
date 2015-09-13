@@ -10,6 +10,9 @@
 			required: true
 			index: true
 			notNull: true
+			# (Hack) Until https://github.com/balderdashy/waterline-sequel/issues/23 is resolved,
+			# we will explicitly define PK attribute to work around the "ORDER BY undefined" issue
+			primaryKey: false
 		source:
 			type: "email"
 			size: 100
@@ -20,4 +23,12 @@
 			size: 100
 			required: true
 			notNull: true
+		custom:
+			type: 'boolean',
+			size: 1,
+			defaultsTo: true,
+			boolean: true
+	autoCreatedAt: false,
+	autoUpdatedAt: false,
+	autoPK: false
 }

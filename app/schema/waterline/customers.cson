@@ -3,6 +3,9 @@
 	identity: "customer"
 	connection: "lovesMoney"
 	attributes:
+		id:
+			type: "integer"
+			primaryKey: true
 		name:
 			type: "string"
 			required: true
@@ -11,8 +14,13 @@
 			type: "string" # Hash of customer secret or pw
 			required: true
 			notNull: true
-		pwhash:
+		pw_hash:
 			type: "string"
+			required: true
+			notNull: true
+		email:
+			type: "email"
+			unique: true # Unique index
 			required: true
 			notNull: true
 		aliases:
