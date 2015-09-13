@@ -10,7 +10,23 @@
 				{
 					'method': 'get'
 					'url': '/'
-					'handler': 'index'
+					'handler': 'getIndex'
+				}
+			]
+		}
+		{
+			'controller': 'auth.js'
+			'prefix': '/auth'
+			'routes': [
+				{
+					'method': 'post'
+					'url': '/'
+					'handler': 'postLogin'
+				}
+				{
+					'method': 'get'
+					'url': '/'
+					'handler': 'getRefresh'
 				}
 			]
 		}
@@ -21,27 +37,28 @@
 				{
 					'method': 'get'
 					'url': '/'
-					'handler': 'index'
+					'handler': 'getIndex'
 				}
 				{
 					'method': 'get'
 					'url': '/:alias'
-					'handler': 'get'
+					'handler': 'getAlias'
 				}
 				{
 					'method': 'post'
 					'url': '/'
-					'handler': 'create'
+					'handler': 'postAlias'
 				}
 				{
 					'method': 'delete'
 					'url': '/_all'
-					'handler': 'truncate'
+					'handler': 'deleteAll'
 				}
 				{
 					'method': 'delete'
+					# Note routes with manual entry must come after routes with fixed entry, so that the fixed ones will be resolved
 					'url': '/:alias'
-					'handler': 'delete'
+					'handler': 'deleteAlias'
 				}
 			]
 		}
