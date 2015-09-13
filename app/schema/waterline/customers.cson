@@ -23,6 +23,11 @@
 			unique: true # Unique index
 			required: true
 			notNull: true
+		active:
+			type: "boolean",
+			size: 1,
+			defaultsTo: true,
+			boolean: true
 		aliases:
 			collection: "alias"
 			via: "customer_id"

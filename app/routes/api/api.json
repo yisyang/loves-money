@@ -15,22 +15,6 @@
       ]
     },
     {
-      "controller": "auth.js",
-      "prefix": "/auth",
-      "routes": [
-        {
-          "method": "post",
-          "url": "/",
-          "handler": "postLogin"
-        },
-        {
-          "method": "get",
-          "url": "/",
-          "handler": "getRefresh"
-        }
-      ]
-    },
-    {
       "controller": "aliases.js",
       "prefix": "/aliases",
       "routes": [
@@ -58,6 +42,43 @@
           "method": "delete",
           "url": "/:alias",
           "handler": "deleteAlias"
+        }
+      ]
+    },
+    {
+      "controller": "auth.js",
+      "prefix": "/auth",
+      "routes": [
+        {
+          "method": "post",
+          "url": "/",
+          "handler": "postLogin"
+        },
+        {
+          "method": "get",
+          "url": "/",
+          "handler": "getRefresh"
+        }
+      ]
+    },
+    {
+      "controller": "customers.js",
+      "prefix": "/customers",
+      "routes": [
+        {
+          "method": "get",
+          "url": "/:id",
+          "handler": "getCustomer"
+        },
+        {
+          "method": "post",
+          "url": "/",
+          "handler": "postCustomer"
+        },
+        {
+          "method": "delete",
+          "url": "/:id",
+          "handler": "deleteCustomer"
         }
       ]
     }

@@ -24,7 +24,7 @@
 			required: true
 			notNull: true
 		custom:
-			type: 'boolean',
+			type: "boolean",
 			size: 1,
 			defaultsTo: true,
 			boolean: true

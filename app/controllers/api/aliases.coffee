@@ -20,6 +20,8 @@ controller.getAlias = (req, res) ->
 	return
 
 controller.postAlias = (req, res) ->
+	# TODO: verify req.user is logged in and add customer ID to new alias
+
 	aliases = req.app.models.alias
 
 	# Prepare alias model data
@@ -131,6 +133,8 @@ controller.deleteAlias = (req, res) ->
 	return
 
 controller.deleteAll = (req, res) ->
+	# TODO: verify req.user is admin
+
 	if req.app.get('config').env is not 'development'
 		res._cc.fail 'Invalid route, please use the UI at loves.money or view github source for valid requests.'
 		return
