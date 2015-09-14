@@ -3,16 +3,11 @@
   "identity": "customer",
   "connection": "lovesMoney",
   "attributes": {
-    "id": {
-      "type": "integer",
+    "uuid": {
+      "type": "string",
       "primaryKey": true
     },
     "name": {
-      "type": "string",
-      "required": true,
-      "notNull": true
-    },
-    "uuid": {
       "type": "string",
       "required": true,
       "notNull": true

@@ -68,7 +68,7 @@
 			'routes': [
 				{
 					'method': 'get'
-					'url': '/:id'
+					'url': '/:uuid'
 					'handler': 'getCustomer'
 				}
 				{
@@ -78,7 +78,7 @@
 				}
 				{
 					'method': 'delete'
-					'url': '/:id'
+					'url': '/:uuid'
 					'handler': 'deleteCustomer'
 				}
 			]
