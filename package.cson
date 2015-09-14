@@ -31,6 +31,7 @@
 		"sails-mysql": "~0.10.11" # MySQL adapter for waterline
 		"semantic-ui-css": "^2.0.8"
 		"serve-favicon": "^2.2.0"
+		"uuid": "~2.0.1" # UUID generator
 		"waterline": "~0.10.18" # Cross DB ORM
 	"devDependencies":
 		"chai": "^2.3.0" # Sugar lots of it

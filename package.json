@@ -32,6 +32,7 @@
     "sails-mysql": "~0.10.11",
     "semantic-ui-css": "^2.0.8",
     "serve-favicon": "^2.2.0",
+    "uuid": "~2.0.1",
     "waterline": "~0.10.18"
   },
   "devDependencies": {

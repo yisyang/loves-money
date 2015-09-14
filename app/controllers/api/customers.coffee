@@ -1,5 +1,6 @@
 hmacSha1 = require('crypto-js/hmac-sha1')
 sha1 = require('crypto-js/sha1')
+uuid = require('uuid')
 
 controller = {}
 
@@ -33,16 +34,11 @@ controller.postCustomer = (req, res) ->
 			throw false
 		return
 	.then () ->
-		# Prepare customer model data
-		newCustomer =
-			uuid: 1234 # TODO: replace with real solution
-			name: req.body.name
-			# Apply server-side hasing on top of client-side transformed PW for DB storage
-			pw_hash: hmacSha1(req.body.pw_transformed, req.app.get('config').secret_keys.db_hash).toString()
-			email: req.body.email
-
-		# Inject/replace uuid and attempt to insert up to 3 times
-		createCustomer req, res, newCustomer
+		# Inject/replace uuid and attempt to insert up to 3 times and return promise
+		createCustomer req
+	.then (customer) ->
+		# Customer successfully created
+		res._cc.success formatCustomer req, customer
 		return
 	.catch (err) ->
 		if err
@@ -82,23 +78,30 @@ formatCustomer = (req, customer) ->
 		result.customer_secret = customer.customer_secret
 	result
 
-createCustomer = (req, res, newCustomer, retriesLeft) ->
+createCustomer = (req, retriesLeft) ->
+	# Although astronomically unlikely, it is still possible to have collisions on the UUID
+	# for that reason we retry 3 times when adding a new customer
 	if !retriesLeft?
 		retriesLeft = 3
-	customers = req.app.models.customer
 
+	# Prepare customer model data
+	newCustomer =
+		name: req.body.name
+		email: req.body.email
+
+	# Assign UUID to customer
+	newCustomer.uuid = uuid.v4()
+	# Apply server-side hasing on top of client-side PW hash for DB storage
+	newCustomer.pw_hash = hmacSha1(req.body.pw_hash, newCustomer.uuid + req.app.get('config').secret_keys.db_hash).toString()
+
+	# Attempt to add customer
+	customers = req.app.models.customer
 	customers.create newCustomer
 	.then (customer) ->
-		# Customer successfully created
-		res._cc.success formatCustomer req, customer
-		return
+		customer
 	.catch (err) ->
 		if retriesLeft <= 0
-			res._cc.fail 'xError creating customer', {}, err
-			return
-		newCustomer.uuid = 1235 # TODO: replace with real solution
-		createCustomer req, res, newCustomer, retriesLeft - 1
-		return
-	return
+			throw err
+		createCustomer req, retriesLeft - 1
 
 module.exports = controller
