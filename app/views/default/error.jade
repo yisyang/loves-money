@@ -1,7 +1,6 @@
 extends layout
 
 block content
-	h1= error.message
-	h2= error.status
-	a(href="javascript:history.go(-1)") Go Back
+	h1= 'Error ' + error.status
+	h2= error.message
 	pre #{error.stack}

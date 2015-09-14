@@ -8,18 +8,18 @@
 
   controller = {};
 
-  controller.index = function(req, res) {
+  controller.getIndex = function(req, res) {
     res._cc.fail('Invalid route, please use the UI at loves.money or view github source for valid requests.');
   };
 
-  controller.get = function(req, res) {
+  controller.getAlias = function(req, res) {
     var aliases;
     aliases = req.app.models.alias;
     aliases.findOne({
       src_name: req.params.alias
     }, function(err, alias) {
       if (err) {
-        res._cc.fail('Unable to get alias', {}, err);
+        res._cc.fail('Unable to get alias', null, err);
       }
       if (alias) {
         res._cc.success(formatAlias(req, alias));
@@ -29,7 +29,7 @@
     });
   };
 
-  controller.create = function(req, res) {
+  controller.postAlias = function(req, res) {
     var aliases, new_alias, _ref;
     aliases = req.app.models.alias;
     new_alias = {
@@ -54,7 +54,7 @@
         aliases.destroy({
           id: alias.id
         }, function() {});
-        res._cc.fail('Error creating mail alias', {}, err);
+        res._cc.fail('Error creating mail alias', null, err);
       });
     })["catch"](function() {
       aliases.findOne().where({
@@ -86,13 +86,13 @@
         }
       })["catch"](function(err) {
         if (err) {
-          res._cc.fail('Error creating alias', {}, err);
+          res._cc.fail('Error creating alias', null, err);
         }
       });
     });
   };
 
-  controller["delete"] = function(req, res) {
+  controller.deleteAlias = function(req, res) {
     var aliases, _ref;
     if (!req.body.alias_secret) {
       return res._cc.fail('Please provide the alias_secret');
@@ -102,7 +102,7 @@
       return;
     }
     aliases = req.app.models.alias;
-    return aliases.findOne().where({
+    aliases.findOne().where({
       src_name: req.params.alias
     }).then(function(alias) {
       if (!alias) {
@@ -115,42 +115,42 @@
       }
       req.app.models.virtual_alias.destroy({
         domain_id: req.app.get('config').mailserver_domain_id,
-        destination: alias.dest_email
+        destination: alias.dest_email,
+        custom: true
       }).then(function() {
         return aliases.destroy({
           id: alias.id
-        }, function(err) {
-          if (err) {
-            res._cc.fail('Unable to delete alias', {}, err);
-            throw false;
-          }
-          res._cc.success();
         });
+      }).then(function() {
+        res._cc.success();
       })["catch"](function(err) {
-        res._cc.fail('Error deleting mail alias', {}, err);
+        res._cc.fail('Unable to delete alias', null, err);
       });
-      return;
     })["catch"](function(err) {
       if (err) {
-        res._cc.fail('Unable to get alias', {}, err);
+        res._cc.fail('Unable to get alias', null, err);
       }
     });
   };
 
-  controller.truncate = function(req, res) {
+  controller.deleteAll = function(req, res) {
     var aliases;
     if (req.app.get('config').env === !'development') {
       res._cc.fail('Invalid route, please use the UI at loves.money or view github source for valid requests.');
       return;
-    } else {
-      aliases = req.app.models.alias;
-      aliases.query('TRUNCATE TABLE aliases', function(err) {
-        if (err) {
-          return res._cc.fail('Unable to truncate aliases', {}, err);
-        }
-        res._cc.success();
-      });
     }
+    aliases = req.app.models.alias;
+    aliases.query('TRUNCATE TABLE aliases').then(function() {
+      return req.app.models.virtual_alias.destroy({
+        custom: true
+      });
+    }).then(function() {
+      res._cc.success();
+    })["catch"](function(err) {
+      if (err) {
+        res._cc.fail('Unable to truncate aliases', null, err);
+      }
+    });
   };
 
   formatAlias = function(req, alias) {

@@ -3,15 +3,15 @@ sha1 = require('crypto-js/sha1')
 
 controller = {}
 
-controller.index = (req, res) ->
+controller.getIndex = (req, res) ->
 	res._cc.fail 'Invalid route, please use the UI at loves.money or view github source for valid requests.'
 	return
 
-controller.get = (req, res) ->
+controller.getAlias = (req, res) ->
 	aliases = req.app.models.alias
 	aliases.findOne { src_name: req.params.alias }, (err, alias) ->
 		if err
-			res._cc.fail 'Unable to get alias', {}, err
+			res._cc.fail 'Unable to get alias', null, err
 		if alias
 			res._cc.success formatAlias req, alias
 		else
@@ -19,7 +19,9 @@ controller.get = (req, res) ->
 		return
 	return
 
-controller.create = (req, res) ->
+controller.postAlias = (req, res) ->
+	# TODO: verify req.user is logged in and add customer ID to new alias
+
 	aliases = req.app.models.alias
 
 	# Prepare alias model data
@@ -50,7 +52,7 @@ controller.create = (req, res) ->
 		.catch (err) ->
 			aliases.destroy { id: alias.id }, ->
 				return
-			res._cc.fail 'Error creating mail alias', {}, err
+			res._cc.fail 'Error creating mail alias', null, err
 			return
 		return
 	# Alias creation failed, attempt to find and report reason for failure
@@ -75,12 +77,12 @@ controller.create = (req, res) ->
 			return
 		.catch (err) ->
 			if err
-				res._cc.fail 'Error creating alias', {}, err
+				res._cc.fail 'Error creating alias', null, err
 			return
 		return
 	return
 
-controller.delete = (req, res) ->
+controller.deleteAlias = (req, res) ->
 	# Make sure that alias_secret is provided
 	if !req.body.alias_secret
 		return res._cc.fail 'Please provide the alias_secret'
@@ -109,39 +111,47 @@ controller.delete = (req, res) ->
 		req.app.models.virtual_alias.destroy(
 			domain_id: req.app.get('config').mailserver_domain_id
 			destination: alias.dest_email
+			custom: true
 		)
 		# Mailserver alias successfully deleted
 		.then () ->
-			# Finally delete alias
-			aliases.destroy { id: alias.id }, (err) ->
-				if err
-					res._cc.fail 'Unable to delete alias', {}, err
-					throw false
-				res._cc.success()
-				return
-		# Failed to delete mailserver alias
-		.catch (err) ->
-			res._cc.fail 'Error deleting mail alias', {}, err
+			# Attempt to delete customer alias
+			aliases.destroy { id: alias.id }
+		# Customer alias successfully deleted
+		.then () ->
+			res._cc.success()
 			return
-		return
-
+		# Failed to delete mailserver alias or customer alias
+		.catch (err) ->
+			res._cc.fail 'Unable to delete alias', null, err
+			return
 		return
 	.catch (err) ->
 		if err
-			res._cc.fail 'Unable to get alias', {}, err
+			res._cc.fail 'Unable to get alias', null, err
 		return
+	return
 
-controller.truncate = (req, res) ->
+controller.deleteAll = (req, res) ->
+	# TODO: verify req.user is admin
+
 	if req.app.get('config').env is not 'development'
 		res._cc.fail 'Invalid route, please use the UI at loves.money or view github source for valid requests.'
 		return
-	else
-		aliases = req.app.models.alias
-		aliases.query 'TRUNCATE TABLE aliases', (err) ->
-			if err
-				return res._cc.fail 'Unable to truncate aliases', {}, err
-			res._cc.success()
-			return
+
+	aliases = req.app.models.alias
+	aliases.query('TRUNCATE TABLE aliases')
+	# Customer alias truncated
+	.then () ->
+		req.app.models.virtual_alias.destroy { custom: true }
+	# Corresponding mailserver alias truncated
+	.then () ->
+		res._cc.success()
+		return
+	.catch (err) ->
+		if err
+			res._cc.fail 'Unable to truncate aliases', null, err
+		return
 	return
 
 # Format alias to only include public data

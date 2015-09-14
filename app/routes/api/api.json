@@ -10,7 +10,7 @@
         {
           "method": "get",
           "url": "/",
-          "handler": "index"
+          "handler": "getIndex"
         }
       ]
     },
@@ -21,27 +21,64 @@
         {
           "method": "get",
           "url": "/",
-          "handler": "index"
+          "handler": "getIndex"
         },
         {
           "method": "get",
           "url": "/:alias",
-          "handler": "get"
+          "handler": "getAlias"
         },
         {
           "method": "post",
           "url": "/",
-          "handler": "create"
+          "handler": "postAlias"
         },
         {
           "method": "delete",
           "url": "/_all",
-          "handler": "truncate"
+          "handler": "deleteAll"
         },
         {
           "method": "delete",
           "url": "/:alias",
-          "handler": "delete"
+          "handler": "deleteAlias"
+        }
+      ]
+    },
+    {
+      "controller": "auth.js",
+      "prefix": "/auth",
+      "routes": [
+        {
+          "method": "post",
+          "url": "/",
+          "handler": "postLogin"
+        },
+        {
+          "method": "get",
+          "url": "/",
+          "handler": "getRefresh"
+        }
+      ]
+    },
+    {
+      "controller": "customers.js",
+      "prefix": "/customers",
+      "routes": [
+        {
+          "method": "get",
+          "url": "/:uuid",
+          "handler": "getCustomer"
+        },
+        {
+          "method": "post",
+          "url": "/",
+          "handler": "postCustomer"
+        },
+        {
+          "method": "delete",
+          "url": "/:uuid",
+          "handler": "deleteCustomer"
         }
       ]
     }

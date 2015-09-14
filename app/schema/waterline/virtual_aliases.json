@@ -9,7 +9,8 @@
       "type": "integer",
       "required": true,
       "index": true,
-      "notNull": true
+      "notNull": true,
+      "primaryKey": false
     },
     "source": {
       "type": "email",
@@ -22,6 +23,13 @@
       "size": 100,
       "required": true,
       "notNull": true
+    },
+    "custom": {
+      "type": "boolean",
+      "size": 1,
+      "defaultsTo": true,
+      "boolean": true
     }
-  }
+  },
+  "autoPK": false
 }

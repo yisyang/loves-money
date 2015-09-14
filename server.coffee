@@ -23,14 +23,11 @@ app.use (req, res, next) ->
 	next()
 	return
 
-# Send favicon
-app.use favicon path.join(__dirname, 'public', config.appDir, 'img', 'favicon.ico')
-
 # Block coffee files from direct access
-app.use '*.coffee', (req, res) ->
+app.use '*.coffee', (req, res, next) ->
 	console.log("[Blocked] Access to coffeescript %s %s", req.method, req.url)
 	err = eh.createError('Not Found', { status: 404 })
-	eh.displayError(res, err, req.app.get('config').env)
+	next(err)
 
 # Add static routes
 app.use "/public", express.static path.join(__dirname, 'public')
@@ -41,6 +38,13 @@ app.use "/css", express.static path.join(__dirname, 'public', config.appDir, 'cs
 app.use "/img", express.static path.join(__dirname, 'public', config.appDir, 'img')
 app.use "/partials", express.static path.join(__dirname, 'public', config.appDir, 'partials')
 app.use "/templates", express.static path.join(__dirname, 'public', config.appDir, 'templates')
+
+# Take care of customer defined redirects (example.loves.money to www.example.com)
+lovesMoneyRedirector = require('./app/middlewares/redirector.js')
+app.use lovesMoneyRedirector
+
+# Send favicon
+app.use favicon path.join(__dirname, 'public', config.appDir, 'img', 'favicon.ico')
 
 # Read cookie
 app.use cookieParser()
