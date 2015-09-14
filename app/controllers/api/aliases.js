@@ -19,7 +19,7 @@
       src_name: req.params.alias
     }, function(err, alias) {
       if (err) {
-        res._cc.fail('Unable to get alias', {}, err);
+        res._cc.fail('Unable to get alias', null, err);
       }
       if (alias) {
         res._cc.success(formatAlias(req, alias));
@@ -54,7 +54,7 @@
         aliases.destroy({
           id: alias.id
         }, function() {});
-        res._cc.fail('Error creating mail alias', {}, err);
+        res._cc.fail('Error creating mail alias', null, err);
       });
     })["catch"](function() {
       aliases.findOne().where({
@@ -86,7 +86,7 @@
         }
       })["catch"](function(err) {
         if (err) {
-          res._cc.fail('Error creating alias', {}, err);
+          res._cc.fail('Error creating alias', null, err);
         }
       });
     });
@@ -124,11 +124,11 @@
       }).then(function() {
         res._cc.success();
       })["catch"](function(err) {
-        res._cc.fail('Unable to delete alias', {}, err);
+        res._cc.fail('Unable to delete alias', null, err);
       });
     })["catch"](function(err) {
       if (err) {
-        res._cc.fail('Unable to get alias', {}, err);
+        res._cc.fail('Unable to get alias', null, err);
       }
     });
   };
@@ -148,7 +148,7 @@
       res._cc.success();
     })["catch"](function(err) {
       if (err) {
-        res._cc.fail('Unable to truncate aliases', {}, err);
+        res._cc.fail('Unable to truncate aliases', null, err);
       }
     });
   };

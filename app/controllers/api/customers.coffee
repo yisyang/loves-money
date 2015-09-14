@@ -12,10 +12,10 @@ controller.getCustomer = (req, res) ->
 	customers = req.app.models.customer
 	customers.findOne { uuid: req.params.uuid }, (err, customer) ->
 		if err
-			res._cc.fail 'Unable to get customer', {}, err
+			res._cc.fail 'Unable to get customer', null, err
 			return
 		if customer
-			res._cc.success formatCustomer req, customer
+			res._cc.success formatCustomer customer
 		else
 			res._cc.fail 'Customer not found'
 		return
@@ -23,6 +23,11 @@ controller.getCustomer = (req, res) ->
 
 controller.postCustomer = (req, res) ->
 	# TODO: verify req.user is admin
+
+	# Verify that everythng needed have been provided
+	if !req.body.name || !req.body.email || !req.body.pw_hash
+		res._cc.fail 'Unable to add customer - missing required parameters'
+		return
 
 	# Verify that the email address is not taken
 	customers = req.app.models.customer
@@ -38,11 +43,11 @@ controller.postCustomer = (req, res) ->
 		createCustomer req
 	.then (customer) ->
 		# Customer successfully created
-		res._cc.success formatCustomer req, customer
+		res._cc.success formatCustomer customer
 		return
 	.catch (err) ->
 		if err
-			res._cc.fail 'Error creating customer', {}, err
+			res._cc.fail 'Error creating customer', null, err
 		return
 
 	return
@@ -63,19 +68,16 @@ controller.deleteCustomer = (req, res) ->
 		return
 	# Deletion failed
 	.catch (err) ->
-		res._cc.fail 'Unable to delete customer', {}, err
+		res._cc.fail 'Unable to delete customer', null, err
 		return
 	return
 
 # Format customer to only include public data
-formatCustomer = (req, customer) ->
+formatCustomer = (customer) ->
 	result =
 		uuid: customer.uuid
 		name: customer.name
 		email: customer.email
-	# If authorized, also return additional data
-	if req.headers['api-secret'] is req.app.get('config').secret_keys.api_secret
-		result.customer_secret = customer.customer_secret
 	result
 
 createCustomer = (req, retriesLeft) ->

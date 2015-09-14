@@ -27,7 +27,15 @@
       "type": "boolean",
       "size": 1,
       "defaultsTo": true,
-      "boolean": true
+      "boolean": true,
+      "notNull": true
+    },
+    "admin": {
+      "type": "boolean",
+      "size": 1,
+      "defaultsTo": false,
+      "boolean": true,
+      "notNull": true
     },
     "aliases": {
       "collection": "alias",

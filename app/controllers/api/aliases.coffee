@@ -11,7 +11,7 @@ controller.getAlias = (req, res) ->
 	aliases = req.app.models.alias
 	aliases.findOne { src_name: req.params.alias }, (err, alias) ->
 		if err
-			res._cc.fail 'Unable to get alias', {}, err
+			res._cc.fail 'Unable to get alias', null, err
 		if alias
 			res._cc.success formatAlias req, alias
 		else
@@ -52,7 +52,7 @@ controller.postAlias = (req, res) ->
 		.catch (err) ->
 			aliases.destroy { id: alias.id }, ->
 				return
-			res._cc.fail 'Error creating mail alias', {}, err
+			res._cc.fail 'Error creating mail alias', null, err
 			return
 		return
 	# Alias creation failed, attempt to find and report reason for failure
@@ -77,7 +77,7 @@ controller.postAlias = (req, res) ->
 			return
 		.catch (err) ->
 			if err
-				res._cc.fail 'Error creating alias', {}, err
+				res._cc.fail 'Error creating alias', null, err
 			return
 		return
 	return
@@ -123,12 +123,12 @@ controller.deleteAlias = (req, res) ->
 			return
 		# Failed to delete mailserver alias or customer alias
 		.catch (err) ->
-			res._cc.fail 'Unable to delete alias', {}, err
+			res._cc.fail 'Unable to delete alias', null, err
 			return
 		return
 	.catch (err) ->
 		if err
-			res._cc.fail 'Unable to get alias', {}, err
+			res._cc.fail 'Unable to get alias', null, err
 		return
 	return
 
@@ -150,7 +150,7 @@ controller.deleteAll = (req, res) ->
 		return
 	.catch (err) ->
 		if err
-			res._cc.fail 'Unable to truncate aliases', {}, err
+			res._cc.fail 'Unable to truncate aliases', null, err
 		return
 	return
 

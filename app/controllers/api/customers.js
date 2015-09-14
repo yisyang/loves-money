@@ -21,11 +21,11 @@
       uuid: req.params.uuid
     }, function(err, customer) {
       if (err) {
-        res._cc.fail('Unable to get customer', {}, err);
+        res._cc.fail('Unable to get customer', null, err);
         return;
       }
       if (customer) {
-        res._cc.success(formatCustomer(req, customer));
+        res._cc.success(formatCustomer(customer));
       } else {
         res._cc.fail('Customer not found');
       }
@@ -34,6 +34,10 @@
 
   controller.postCustomer = function(req, res) {
     var customers;
+    if (!req.body.name || !req.body.email || !req.body.pw_hash) {
+      res._cc.fail('Unable to add customer - missing required parameters');
+      return;
+    }
     customers = req.app.models.customer;
     customers.findOne().where({
       email: req.body.email
@@ -45,10 +49,10 @@
     }).then(function() {
       return createCustomer(req);
     }).then(function(customer) {
-      res._cc.success(formatCustomer(req, customer));
+      res._cc.success(formatCustomer(customer));
     })["catch"](function(err) {
       if (err) {
-        res._cc.fail('Error creating customer', {}, err);
+        res._cc.fail('Error creating customer', null, err);
       }
     });
   };
@@ -65,20 +69,17 @@
     }).then(function() {
       res._cc.success();
     })["catch"](function(err) {
-      res._cc.fail('Unable to delete customer', {}, err);
+      res._cc.fail('Unable to delete customer', null, err);
     });
   };
 
-  formatCustomer = function(req, customer) {
+  formatCustomer = function(customer) {
     var result;
     result = {
       uuid: customer.uuid,
       name: customer.name,
       email: customer.email
     };
-    if (req.headers['api-secret'] === req.app.get('config').secret_keys.api_secret) {
-      result.customer_secret = customer.customer_secret;
-    }
     return result;
   };
 
