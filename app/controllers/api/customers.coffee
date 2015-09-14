@@ -22,7 +22,7 @@ controller.getCustomer = (req, res) ->
 	return
 
 controller.postCustomer = (req, res) ->
-	# TODO: verify req.user is admin
+	# TODO: verify req.user is logged in req.user is admin
 
 	# Verify that everythng needed have been provided
 	if !req.body.name || !req.body.email || !req.body.pw_hash
@@ -53,7 +53,7 @@ controller.postCustomer = (req, res) ->
 	return
 
 controller.deleteCustomer = (req, res) ->
-	# TODO: verify req.user is admin
+	# TODO: verify req.user is logged in req.user is admin
 
 	customers = req.app.models.customer
 	# Attempt to delete customer by marking status as inactive

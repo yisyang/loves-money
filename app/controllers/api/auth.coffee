@@ -34,6 +34,8 @@ controller.postLogin = (req, res) ->
 	return
 
 controller.getRefresh = (req, res) ->
+	# TODO: verify req.user is logged in req.user is admin
+
 	# At this point credentials are verified by middleware, simply re-issue JWT using existing claims from req.user
 	token = jwt.sign(req.user, req.app.get('config').secret_keys.jwt_secret);
 	res._cc.success token
