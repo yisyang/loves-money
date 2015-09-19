@@ -66,13 +66,16 @@ ErrorHandler.resRenderer = (req, res, next) ->
 			res.json { success: true }
 		res.end()
 		return
-	res._cc.fail = (message, jsonBody, err) ->
+	res._cc.fail = (message, httpStatus = 400, jsonBody, err) ->
+		res.status(httpStatus)
+
+		output = { success: false, message: message }
 		if req.app.get('config').env is 'development' and err?
-			res.json { success: false, message: message, data: jsonBody, error: err }
-		else if jsonBody?
-			res.json { success: false, message: message, data: jsonBody }
-		else
-			res.json { success: false, message: message }
+			output.error = err
+		if jsonBody?
+			output.data = jsonBody
+
+		res.json output
 		res.end()
 		return
 	next()
