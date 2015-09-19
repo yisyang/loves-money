@@ -11,7 +11,7 @@
   controller.postLogin = function(req, res) {
     var customers;
     if (!req.body.email || !req.body.pw_hash) {
-      res._cc.fail('Missing credentials');
+      res._cc.fail('Missing credentials', 401);
       return;
     }
     customers = req.app.models.customer;
@@ -35,7 +35,7 @@
       res._cc.success(token);
     })["catch"](function(err) {
       if (err) {
-        res._cc.fail('Invalid credentials', null, err);
+        res._cc.fail('Invalid credentials', 401, null, err);
         return;
       }
     });

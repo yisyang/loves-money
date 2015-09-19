@@ -26,4 +26,4 @@ redirector = (req, res, next) ->
 		next()
 	return
 
-module.exports = redirector;
+module.exports = redirector

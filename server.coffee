@@ -11,10 +11,17 @@ bodyParser = require('body-parser')
 config = require('./config/config.js')
 eh = require('./core/handlers/error-handler.js')
 DynamicViewsHandler = require('./core/handlers/dynamic-views-handler.js')
+AuthJwt = require('./app/middlewares/auth-jwt.js')
 app = express()
 
 # Load and save config
 app.set 'config', config
+
+# Register middlewares used in routes (or elsewhere)
+middlewares = {
+	'jwt-verify': AuthJwt.verify
+}
+app.set 'middlewares', middlewares
 
 # Replace default express message with a more interesting one
 app.disable('x-powered-by')

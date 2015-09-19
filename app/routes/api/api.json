@@ -64,6 +64,9 @@
     {
       "controller": "customers.js",
       "prefix": "/customers",
+      "middlewares": [
+        "jwt-verify"
+      ],
       "routes": [
         {
           "method": "get",

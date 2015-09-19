@@ -19,7 +19,7 @@
       src_name: req.params.alias
     }, function(err, alias) {
       if (err) {
-        res._cc.fail('Unable to get alias', null, err);
+        res._cc.fail('Unable to get alias', 500, null, err);
       }
       if (alias) {
         res._cc.success(formatAlias(req, alias));
@@ -54,7 +54,7 @@
         aliases.destroy({
           id: alias.id
         }, function() {});
-        res._cc.fail('Error creating mail alias', null, err);
+        res._cc.fail('Error creating mail alias', 500, null, err);
       });
     })["catch"](function() {
       aliases.findOne().where({
@@ -86,7 +86,7 @@
         }
       })["catch"](function(err) {
         if (err) {
-          res._cc.fail('Error creating alias', null, err);
+          res._cc.fail('Error creating alias', 500, null, err);
         }
       });
     });
@@ -95,7 +95,7 @@
   controller.deleteAlias = function(req, res) {
     var aliases, _ref;
     if (!req.body.alias_secret) {
-      return res._cc.fail('Please provide the alias_secret');
+      return res._cc.fail('Missing parameter alias_secret', 401);
     }
     if (!req.params.alias || ((_ref = req.params.alias) === 'abuse' || _ref === 'admin' || _ref === 'administrator' || _ref === 'billing' || _ref === 'hostmaster' || _ref === 'info' || _ref === 'postmaster' || _ref === 'ssl-admin' || _ref === 'support' || _ref === 'webmaster')) {
       res._cc.fail('Requested alias is reserved');
@@ -110,7 +110,7 @@
         throw false;
       }
       if (alias.alias_secret !== req.body.alias_secret) {
-        res._cc.fail('Incorrect secret');
+        res._cc.fail('Incorrect secret', 401);
         throw false;
       }
       req.app.models.virtual_alias.destroy({
@@ -124,11 +124,11 @@
       }).then(function() {
         res._cc.success();
       })["catch"](function(err) {
-        res._cc.fail('Unable to delete alias', null, err);
+        res._cc.fail('Unable to delete alias', 500, null, err);
       });
     })["catch"](function(err) {
       if (err) {
-        res._cc.fail('Unable to get alias', null, err);
+        res._cc.fail('Unable to get alias', 500, null, err);
       }
     });
   };
@@ -148,7 +148,7 @@
       res._cc.success();
     })["catch"](function(err) {
       if (err) {
-        res._cc.fail('Unable to truncate aliases', null, err);
+        res._cc.fail('Unable to truncate aliases', 500, null, err);
       }
     });
   };

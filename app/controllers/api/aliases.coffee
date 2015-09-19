@@ -11,7 +11,7 @@ controller.getAlias = (req, res) ->
 	aliases = req.app.models.alias
 	aliases.findOne { src_name: req.params.alias }, (err, alias) ->
 		if err
-			res._cc.fail 'Unable to get alias', null, err
+			res._cc.fail 'Unable to get alias', 500, null, err
 		if alias
 			res._cc.success formatAlias req, alias
 		else
@@ -52,7 +52,7 @@ controller.postAlias = (req, res) ->
 		.catch (err) ->
 			aliases.destroy { id: alias.id }, ->
 				return
-			res._cc.fail 'Error creating mail alias', null, err
+			res._cc.fail 'Error creating mail alias', 500, null, err
 			return
 		return
 	# Alias creation failed, attempt to find and report reason for failure
@@ -77,7 +77,7 @@ controller.postAlias = (req, res) ->
 			return
 		.catch (err) ->
 			if err
-				res._cc.fail 'Error creating alias', null, err
+				res._cc.fail 'Error creating alias', 500, null, err
 			return
 		return
 	return
@@ -85,7 +85,7 @@ controller.postAlias = (req, res) ->
 controller.deleteAlias = (req, res) ->
 	# Make sure that alias_secret is provided
 	if !req.body.alias_secret
-		return res._cc.fail 'Please provide the alias_secret'
+		return res._cc.fail 'Missing parameter alias_secret', 401
 
 	# Although such aliases would never exist due to the create sanitization, we're repeating the sanitization here
 	# for peace of mind
@@ -103,7 +103,7 @@ controller.deleteAlias = (req, res) ->
 
 		# Confirm ownership by matching customer_secret_hash
 		if alias.alias_secret isnt req.body.alias_secret
-			res._cc.fail 'Incorrect secret'
+			res._cc.fail 'Incorrect secret', 401
 			throw false
 
 		# Alias exists and ownership confirmed
@@ -123,12 +123,12 @@ controller.deleteAlias = (req, res) ->
 			return
 		# Failed to delete mailserver alias or customer alias
 		.catch (err) ->
-			res._cc.fail 'Unable to delete alias', null, err
+			res._cc.fail 'Unable to delete alias', 500, null, err
 			return
 		return
 	.catch (err) ->
 		if err
-			res._cc.fail 'Unable to get alias', null, err
+			res._cc.fail 'Unable to get alias', 500, null, err
 		return
 	return
 
@@ -150,7 +150,7 @@ controller.deleteAll = (req, res) ->
 		return
 	.catch (err) ->
 		if err
-			res._cc.fail 'Unable to truncate aliases', null, err
+			res._cc.fail 'Unable to truncate aliases', 500, null, err
 		return
 	return
 

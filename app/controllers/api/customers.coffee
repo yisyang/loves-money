@@ -9,10 +9,11 @@ controller.index = (req, res) ->
 	return
 
 controller.getCustomer = (req, res) ->
+
 	customers = req.app.models.customer
 	customers.findOne { uuid: req.params.uuid }, (err, customer) ->
 		if err
-			res._cc.fail 'Unable to get customer', null, err
+			res._cc.fail 'Unable to get customer', 500, null, err
 			return
 		if customer
 			res._cc.success formatCustomer customer
@@ -26,7 +27,7 @@ controller.postCustomer = (req, res) ->
 
 	# Verify that everythng needed have been provided
 	if !req.body.name || !req.body.email || !req.body.pw_hash
-		res._cc.fail 'Unable to add customer - missing required parameters'
+		res._cc.fail 'Missing required parameters'
 		return
 
 	# Verify that the email address is not taken
@@ -35,7 +36,7 @@ controller.postCustomer = (req, res) ->
 	.then (customer) ->
 		# Existing customer found
 		if customer
-			res._cc.fail 'Customer email is already in use by an ' + (if customer.active then 'active' else 'inactive') + ' customer'
+			res._cc.fail 'Customer email is already in use by an ' + (if customer.active then 'active' else 'inactive') + ' customer', 500
 			throw false
 		return
 	.then () ->
@@ -47,7 +48,7 @@ controller.postCustomer = (req, res) ->
 		return
 	.catch (err) ->
 		if err
-			res._cc.fail 'Error creating customer', null, err
+			res._cc.fail 'Error creating customer', 500, null, err
 		return
 
 	return
@@ -68,7 +69,7 @@ controller.deleteCustomer = (req, res) ->
 		return
 	# Deletion failed
 	.catch (err) ->
-		res._cc.fail 'Unable to delete customer', null, err
+		res._cc.fail 'Unable to delete customer', 500, null, err
 		return
 	return
 

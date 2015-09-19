@@ -6,7 +6,7 @@ controller = {}
 controller.postLogin = (req, res) ->
 	# Verify that everythng needed have been provided
 	if !req.body.email || !req.body.pw_hash
-		res._cc.fail 'Missing credentials'
+		res._cc.fail 'Missing credentials', 401
 		return
 	customers = req.app.models.customer
 	customers.findOne().where({ email: req.body.email })
@@ -27,7 +27,7 @@ controller.postLogin = (req, res) ->
 		return
 	.catch (err) ->
 		if err
-			res._cc.fail 'Invalid credentials', null, err
+			res._cc.fail 'Invalid credentials', 401, null, err
 			return
 		return
 
