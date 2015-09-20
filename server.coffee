@@ -97,7 +97,7 @@ RoutesLoader.registerRoutes app
 views = app.get 'views'
 
 # Catch 404 and forward to error handler
-app.use ErrorHandler.createAppError 'Not Foundx', { status: 404 }
+app.use ErrorHandler.createAppError 'Not Found', { status: 404 }
 
 # Do error reporting
 app.use ErrorHandler.displayAppError()

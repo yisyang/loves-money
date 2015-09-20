@@ -136,7 +136,7 @@
 
   views = app.get('views');
 
-  app.use(ErrorHandler.createAppError('Not Foundx', {
+  app.use(ErrorHandler.createAppError('Not Found', {
     status: 404
   }));
 
