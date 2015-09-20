@@ -1,5 +1,5 @@
 hmacSha1 = require('crypto-js/hmac-sha1')
-sha1 = require('crypto-js/sha1')
+Promise = require('bluebird')
 
 controller = {}
 
@@ -8,8 +8,7 @@ controller.getIndex = (req, res) ->
 	return
 
 controller.getAlias = (req, res) ->
-	aliases = req.app.models.alias
-	aliases.findOne { src_name: req.params.alias }, (err, alias) ->
+	req.app.getModel('DomainAlias').findOne { srcName: req.params.alias }, (err, alias) ->
 		if err
 			res._cc.fail 'Unable to get alias', 500, null, err
 		if alias
@@ -22,53 +21,51 @@ controller.getAlias = (req, res) ->
 controller.postAlias = (req, res) ->
 	currentUser = req.app.get 'user'
 
-	aliases = req.app.models.alias
-
 	# Prepare alias model data
-	new_alias =
-		customer_id: currentUser.uuid
-		src_name: req.body.alias
-		dest_domain: req.body.domain
-		dest_email: req.body.email
-		customer_secret_hash: hmacSha1(req.body.secret, req.app.get('config').secret_keys.db_hash).toString()
+	newAlias =
+		customerId: currentUser.id
+		srcName: req.body.alias
+		destDomain: req.body.domain
+		destEmail: req.body.email
 
-	if !new_alias.src_name or new_alias.src_name in ['abuse', 'admin', 'administrator', 'billing', 'hostmaster', 'info', 'postmaster', 'ssl-admin', 'support', 'webmaster']
+	if !newAlias.srcName or newAlias.srcName in ['abuse', 'admin', 'administrator', 'billing', 'hostmaster', 'info', 'postmaster', 'ssl-admin', 'support', 'webmaster']
 		res._cc.fail 'Requested alias is reserved'
 		return
 
 	# Attempt to create the alias
-	aliases.create new_alias
+	DomainAlias = req.app.getModel('DomainAlias')
+	DomainAlias.create newAlias
 	# Attempt to create mailserver alias
 	.then (alias) ->
-		req.app.models.virtual_alias.create(
-			domain_id: req.app.get('config').mailserver_domain_id
-			source: new_alias.src_name + '@loves.money'
-			destination: new_alias.dest_email
+		req.app.getModel('VirtualAlias').create(
+			domainId: req.app.get('config').mailserver_domain_id
+			source: newAlias.srcName + '@loves.money'
+			destination: newAlias.destEmail
 		)
 		# Alias and mailserver alias successfully created
 		.then () ->
 			res._cc.success formatAlias req, alias
 		# Failed to create mailserver alias, rollback and destroy alias entry
 		.catch (err) ->
-			aliases.destroy { id: alias.id }, ->
+			DomainAlias.destroy { id: alias.id }, ->
 				return
 			res._cc.fail 'Error creating mail alias', 500, null, err
 			return
 		return
 	# Alias creation failed, attempt to find and report reason for failure
 	.catch () ->
-		aliases.findOne().where({ src_name: new_alias.src_name })
+		DomainAlias.findOne().where({ srcName: newAlias.srcName })
 		.then (alias) ->
 			if alias
 				res._cc.fail 'The alias is already registered'
 				throw false
-			aliases.findOne().where({ dest_domain: new_alias.dest_domain }).then (alias) ->
+			DomainAlias.findOne().where({ destDomain: newAlias.destDomain }).then (alias) ->
 				alias
 		.then (alias) ->
 			if alias
 				res._cc.fail 'The domain is already registered'
 				throw false
-			aliases.findOne().where({ dest_email: new_alias.dest_email }).then (alias) ->
+			DomainAlias.findOne().where({ destEmail: newAlias.destEmail }).then (alias) ->
 				alias
 		.then (alias) ->
 			if alias
@@ -83,18 +80,14 @@ controller.postAlias = (req, res) ->
 	return
 
 controller.deleteAlias = (req, res) ->
-	# Make sure that alias secret is provided
-	if !req.body.secret
-		return res._cc.fail 'Missing parameter secret'
-
 	# Although such aliases would never exist due to the create sanitization, we're repeating the sanitization here
 	# for peace of mind
 	if !req.params.alias or req.params.alias in ['abuse', 'admin', 'administrator', 'billing', 'hostmaster', 'info', 'postmaster', 'ssl-admin', 'support', 'webmaster']
 		res._cc.fail 'Requested alias is reserved'
 		return
 
-	aliases = req.app.models.alias
-	aliases.findOne().where({ src_name: req.params.alias })
+	DomainAlias = req.app.getModel('DomainAlias')
+	DomainAlias.findOne().where({ srcName: req.params.alias })
 	.then (alias) ->
 		# Make sure that the alias exists
 		if !alias
@@ -103,27 +96,21 @@ controller.deleteAlias = (req, res) ->
 
 		# Customer must have ownership over the alias, or must be an admin
 		currentUser = req.app.get 'user'
-		if currentUser.uuid isnt alias.customer_id and !currentUser.isAdmin
+		if currentUser.id isnt alias.customerId and !currentUser.isAdmin
 			res._cc.fail 'You are not the owner of this alias!', 401
 			return
 
-		# Confirm ownership by matching customer_secret_hash
-		customer_secret_hash = hmacSha1(req.body.secret, req.app.get('config').secret_keys.db_hash).toString()
-		if customer_secret_hash isnt alias.customer_secret_hash
-			res._cc.fail 'Incorrect secret', 401
-			throw false
-
 		# Alias exists and ownership confirmed
 		# Attempt to delete mailserver alias
-		req.app.models.virtual_alias.destroy(
-			domain_id: req.app.get('config').mailserver_domain_id
-			destination: alias.dest_email
+		req.app.getModel('VirtualAlias').destroy(
+			domainId: req.app.get('config').mailserver_domain_id
+			destination: alias.destEmail
 			custom: true
 		)
 		# Mailserver alias successfully deleted
 		.then () ->
 			# Attempt to delete customer alias
-			aliases.destroy { id: alias.id }
+			DomainAlias.destroy { id: alias.id }
 		# Customer alias successfully deleted
 		.then () ->
 			res._cc.success()
@@ -149,11 +136,10 @@ controller.deleteAll = (req, res) ->
 		res._cc.fail 'Not authorized', 401
 		return
 
-	aliases = req.app.models.alias
-	aliases.query('TRUNCATE TABLE aliases')
+	req.app.getModel('DomainAlias').query('TRUNCATE TABLE aliases')
 	# Customer alias truncated
 	.then () ->
-		req.app.models.virtual_alias.destroy { custom: true }
+		req.app.getModel('VirtualAlias').destroy { custom: true }
 	# Corresponding mailserver alias truncated
 	.then () ->
 		res._cc.success()
@@ -167,9 +153,9 @@ controller.deleteAll = (req, res) ->
 # Format alias to only include public data
 formatAlias = (req, alias) ->
 	result =
-		customer_id: alias.customer_id
-		alias: alias.src_name
-		domain: alias.dest_domain
-		email: alias.dest_email
+		customerId: alias.customerId
+		alias: alias.srcName
+		domain: alias.destDomain
+		email: alias.destEmail
 
 module.exports = controller

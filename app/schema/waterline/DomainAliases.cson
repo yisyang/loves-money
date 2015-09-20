@@ -1,27 +1,25 @@
 {
-	tableName: "aliases"
-	identity: "alias"
+	tableName: "domain_aliases"
+	identity: "DomainAlias"
 	connection: "lovesMoney"
 	attributes:
 		id:
 			type: "integer"
 			primaryKey: true
-		src_name:
+		srcName:
+			columnName: 'src_name',
 			type: "string"
 			unique: true # Unique index
 			required: true
 			notNull: true
-		dest_domain:
+		destDomain:
+			columnName: 'dest_domain',
 			type: "string"
 			unique: true # Unique index
 			required: true
 			notNull: true
-		dest_email:
-			type: "email"
-			unique: true # Unique index
-			required: true
-			notNull: true
-		incidents:
+		timesReported:
+			columnName: 'times_reported',
 			type: "integer"
 			notNull: true
 			defaultsTo: 0
@@ -30,11 +28,7 @@
 			size: 64 # BIGINT
 			notNull: true
 			defaultsTo: 0
-		# Hash of customer secret or pw, for confirming deletion
-		customer_secret_hash:
-			type: "string"
-			required: true
-			notNull: true
-		customer_id:
-			model: "customer"
+		customerId:
+			columnName: 'customer_id',
+			model: "Customer"
 }

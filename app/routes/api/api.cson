@@ -100,7 +100,7 @@
 			'routes': [
 				{
 					'method': 'get'
-					'url': '/:uuid'
+					'url': '/:id'
 					'handler': 'getCustomer'
 				}
 			]
@@ -120,7 +120,7 @@
 				}
 				{
 					'method': 'delete'
-					'url': '/:uuid'
+					'url': '/:id'
 					'handler': 'deleteCustomer'
 				}
 			]

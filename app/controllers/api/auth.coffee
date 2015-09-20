@@ -5,16 +5,17 @@ controller = {}
 
 controller.postLogin = (req, res) ->
 	# Verify that everythng needed have been provided
-	if !req.body.email || !req.body.pw_hash
+	if !req.body.email || !req.body.pwHash
 		res._cc.fail 'Missing credentials', 401
 		return
-	customers = req.app.models.customer
-	customers.findOne().where({ email: req.body.email })
+
+	# Search for customer by email and attempt to authenticate
+	req.app.getModel('Customer').findOne().where({ email: req.body.email })
 	.then (customer) ->
 		# Customer found, try to match pw
-		if customer and req.body.pw_hash
-			providedPwHash = hmacSha1(req.body.pw_hash, customer.uuid + req.app.get('config').secret_keys.db_hash).toString()
-			if providedPwHash is customer.pw_hash
+		if customer and req.body.pwHash
+			providedPwHash = hmacSha1(req.body.pwHash, customer.id + req.app.get('config').secret_keys.db_hash).toString()
+			if providedPwHash is customer.pwHash
 				return customer
 		false
 	.then (customer) ->
@@ -50,7 +51,7 @@ controller.getRefresh = (req, res) ->
 # Format customer to only include public data
 formatCustomer = (customer) ->
 	result =
-		uuid: customer.uuid
+		id: customer.id
 		name: customer.name
 		email: customer.email
 

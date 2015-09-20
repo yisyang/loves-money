@@ -1,9 +1,9 @@
 {
   "tableName": "customers",
-  "identity": "customer",
+  "identity": "Customer",
   "connection": "lovesMoney",
   "attributes": {
-    "uuid": {
+    "id": {
       "type": "string",
       "primaryKey": true
     },
@@ -12,7 +12,8 @@
       "required": true,
       "notNull": true
     },
-    "pw_hash": {
+    "pwHash": {
+      "columnName": "pw_hash",
       "type": "string",
       "required": true,
       "notNull": true
@@ -37,9 +38,13 @@
       "boolean": true,
       "notNull": true
     },
-    "aliases": {
-      "collection": "alias",
-      "via": "customer_id"
+    "domainAliases": {
+      "collection": "DomainAlias",
+      "via": "customerId"
+    },
+    "emailAliases": {
+      "collection": "EmailAlias",
+      "via": "customerId"
     }
   }
 }

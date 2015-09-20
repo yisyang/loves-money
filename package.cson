@@ -10,6 +10,7 @@
 		"test": "mocha ./test/test.js"
 		"test-ui": "mocha ./test/ui.js" # "npm run test-ui", Selenium test - currently fails
 	"dependencies":
+		"bluebird": "^2.10.0"
 		"body-parser": "^1.13.3"
 		"cookie-parser": "~1.0.1"
 		"crypto-js": "~3.1.5" # Easy access to crypto

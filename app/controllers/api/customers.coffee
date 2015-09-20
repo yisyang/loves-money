@@ -1,5 +1,4 @@
 hmacSha1 = require('crypto-js/hmac-sha1')
-sha1 = require('crypto-js/sha1')
 uuid = require('uuid')
 
 controller = {}
@@ -10,12 +9,11 @@ controller.index = (req, res) ->
 
 controller.getCustomer = (req, res) ->
 	currentUser = req.app.get 'user'
-	if currentUser.uuid isnt req.params.uuid and !currentUser.isAdmin
+	if currentUser.id isnt req.params.id and !currentUser.isAdmin
 		res._cc.fail 'Not authorized', 401
 		return
 
-	customers = req.app.models.customer
-	customers.findOne { uuid: req.params.uuid }, (err, customer) ->
+	req.app.getModel('Customer').findOne { id: req.params.id }, (err, customer) ->
 		if err
 			res._cc.fail 'Unable to get customer', 500, null, err
 			return
@@ -28,13 +26,12 @@ controller.getCustomer = (req, res) ->
 
 controller.postCustomer = (req, res) ->
 	# Verify that everythng needed have been provided
-	if !req.body.name || !req.body.email || !req.body.pw_hash
+	if !req.body.name || !req.body.email || !req.body.pwHash
 		res._cc.fail 'Missing required parameters'
 		return
 
 	# Verify that the email address is not taken
-	customers = req.app.models.customer
-	customers.findOne().where({ email: req.body.email })
+	req.app.getModel('Customer').findOne().where({ email: req.body.email })
 	.then (customer) ->
 		# Existing customer found
 		if customer
@@ -56,9 +53,8 @@ controller.postCustomer = (req, res) ->
 	return
 
 controller.deleteCustomer = (req, res) ->
-	customers = req.app.models.customer
 	# Attempt to delete customer by marking status as inactive
-	customers.findOne { uuid: req.params.uuid, active: true }
+	req.app.getModel('Customer').findOne { id: req.params.id, active: true }
 	# Customer found
 	.then (customer) ->
 		customer.active = false
@@ -76,7 +72,7 @@ controller.deleteCustomer = (req, res) ->
 # Format customer to only include public data
 formatCustomer = (customer) ->
 	result =
-		uuid: customer.uuid
+		id: customer.id
 		name: customer.name
 		email: customer.email
 	result
@@ -93,13 +89,12 @@ createCustomer = (req, retriesLeft) ->
 		email: req.body.email
 
 	# Assign UUID to customer
-	newCustomer.uuid = uuid.v4()
+	newCustomer.id = uuid.v4()
 	# Apply server-side hasing on top of client-side PW hash for DB storage
-	newCustomer.pw_hash = hmacSha1(req.body.pw_hash, newCustomer.uuid + req.app.get('config').secret_keys.db_hash).toString()
+	newCustomer.pwHash = hmacSha1(req.body.pwHash, newCustomer.id + req.app.get('config').secret_keys.db_hash).toString()
 
 	# Attempt to add customer
-	customers = req.app.models.customer
-	customers.create newCustomer
+	req.app.getModel('Customer').create newCustomer
 	.then (customer) ->
 		customer
 	.catch (err) ->

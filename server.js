@@ -90,19 +90,7 @@
 
   app.use(ErrorHandler.resRenderer);
 
-  if (typeof ModelsLoader.updateAdapters === 'function') {
-    config.db = ModelsLoader.updateAdapters(config.db);
-  }
-
-  ModelsLoader.loadModels(path.join(__dirname, config.appDir, 'schema', 'waterline'));
-
-  ModelsLoader.orm.initialize(config.db, function(err, models) {
-    if (err) {
-      throw err;
-    }
-    app.models = models.collections;
-    return app.connections = models.connections;
-  });
+  ModelsLoader.initialize(app, config.db);
 
   MultiViews.setupMultiViews(app);
 

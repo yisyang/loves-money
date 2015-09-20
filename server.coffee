@@ -67,14 +67,7 @@ app.use CorsHandler.allowDomain('*')
 app.use ErrorHandler.resRenderer
 
 # Load Waterline ORM
-if typeof(ModelsLoader.updateAdapters) is 'function'
-	config.db = ModelsLoader.updateAdapters config.db
-
-ModelsLoader.loadModels path.join(__dirname, config.appDir, 'schema', 'waterline')
-ModelsLoader.orm.initialize config.db, (err, models) ->
-	throw err if err
-	app.models = models.collections
-	app.connections = models.connections
+ModelsLoader.initialize(app, config.db)
 
 # View engine setup
 MultiViews.setupMultiViews(app)

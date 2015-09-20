@@ -9,19 +9,17 @@
   controller = {};
 
   controller.postLogin = function(req, res) {
-    var customers;
-    if (!req.body.email || !req.body.pw_hash) {
+    if (!req.body.email || !req.body.pwHash) {
       res._cc.fail('Missing credentials', 401);
       return;
     }
-    customers = req.app.models.customer;
-    customers.findOne().where({
+    req.app.getModel('Customer').findOne().where({
       email: req.body.email
     }).then(function(customer) {
       var providedPwHash;
-      if (customer && req.body.pw_hash) {
-        providedPwHash = hmacSha1(req.body.pw_hash, customer.uuid + req.app.get('config').secret_keys.db_hash).toString();
-        if (providedPwHash === customer.pw_hash) {
+      if (customer && req.body.pwHash) {
+        providedPwHash = hmacSha1(req.body.pwHash, customer.id + req.app.get('config').secret_keys.db_hash).toString();
+        if (providedPwHash === customer.pwHash) {
           return customer;
         }
       }
@@ -57,7 +55,7 @@
   formatCustomer = function(customer) {
     var result;
     return result = {
-      uuid: customer.uuid,
+      id: customer.id,
       name: customer.name,
       email: customer.email
     };
