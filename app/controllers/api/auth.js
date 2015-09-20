@@ -42,8 +42,9 @@
   };
 
   controller.getRefresh = function(req, res) {
-    var token;
-    token = jwt.sign(req.user, req.app.get('config').secret_keys.jwt_secret);
+    var currentUser, token;
+    currentUser = req.app.get('user');
+    token = jwt.sign(currentUser, req.app.get('config').secret_keys.jwt_secret);
     res._cc.success(token);
   };
 

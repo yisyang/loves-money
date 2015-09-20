@@ -15,7 +15,12 @@
   };
 
   controller.getCustomer = function(req, res) {
-    var customers;
+    var currentUser, customers;
+    currentUser = req.app.get('user');
+    if (currentUser.uuid !== req.params.uuid && !currentUser.isAdmin) {
+      res._cc.fail('Not authorized', 401);
+      return;
+    }
     customers = req.app.models.customer;
     customers.findOne({
       uuid: req.params.uuid

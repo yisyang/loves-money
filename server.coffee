@@ -1,4 +1,4 @@
-browserify = require('browserify-middleware');
+browserify = require('browserify-middleware')
 express = require('express')
 path = require('path')
 favicon = require('serve-favicon')
@@ -11,17 +11,10 @@ bodyParser = require('body-parser')
 config = require('./config/config.js')
 eh = require('./core/handlers/error-handler.js')
 DynamicViewsHandler = require('./core/handlers/dynamic-views-handler.js')
-AuthJwt = require('./app/middlewares/auth-jwt.js')
 app = express()
 
 # Load and save config
 app.set 'config', config
-
-# Register middlewares used in routes (or elsewhere)
-middlewares = {
-	'jwt-verify': AuthJwt.verify
-}
-app.set 'middlewares', middlewares
 
 # Replace default express message with a more interesting one
 app.disable('x-powered-by')
@@ -46,9 +39,12 @@ app.use "/img", express.static path.join(__dirname, 'public', config.appDir, 'im
 app.use "/partials", express.static path.join(__dirname, 'public', config.appDir, 'partials')
 app.use "/templates", express.static path.join(__dirname, 'public', config.appDir, 'templates')
 
+# Register middlewares used in routes (or elsewhere)
+middlewares = require('./app/middlewares/loader.js')
+app.set 'middlewares', middlewares
+
 # Take care of customer defined redirects (example.loves.money to www.example.com)
-lovesMoneyRedirector = require('./app/middlewares/redirector.js')
-app.use lovesMoneyRedirector
+app.use middlewares['redirector']
 
 # Send favicon
 app.use favicon path.join(__dirname, 'public', config.appDir, 'img', 'favicon.ico')

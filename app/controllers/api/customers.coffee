@@ -9,6 +9,10 @@ controller.index = (req, res) ->
 	return
 
 controller.getCustomer = (req, res) ->
+	currentUser = req.app.get 'user'
+	if currentUser.uuid isnt req.params.uuid and !currentUser.isAdmin
+		res._cc.fail 'Not authorized', 401
+		return
 
 	customers = req.app.models.customer
 	customers.findOne { uuid: req.params.uuid }, (err, customer) ->
@@ -23,8 +27,6 @@ controller.getCustomer = (req, res) ->
 	return
 
 controller.postCustomer = (req, res) ->
-	# TODO: verify req.user is logged in req.user is admin
-
 	# Verify that everythng needed have been provided
 	if !req.body.name || !req.body.email || !req.body.pw_hash
 		res._cc.fail 'Missing required parameters'
@@ -54,8 +56,6 @@ controller.postCustomer = (req, res) ->
 	return
 
 controller.deleteCustomer = (req, res) ->
-	# TODO: verify req.user is logged in req.user is admin
-
 	customers = req.app.models.customer
 	# Attempt to delete customer by marking status as inactive
 	customers.findOne { uuid: req.params.uuid, active: true }

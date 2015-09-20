@@ -30,11 +30,11 @@
 			size: 64 # BIGINT
 			notNull: true
 			defaultsTo: 0
+		# Hash of customer secret or pw, for confirming deletion
 		customer_secret_hash:
-			type: "string" # Hash of customer secret or pw
+			type: "string"
 			required: true
 			notNull: true
-		alias_secret: "string" # Randomly generated secret for the alias, for confirming deletion
 		customer_id:
 			model: "customer"
 }

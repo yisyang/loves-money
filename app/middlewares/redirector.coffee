@@ -3,7 +3,7 @@ eh = require('../../core/handlers/error-handler.js')
 # Domain redirect service
 redirector = (req, res, next) ->
 	if req.headers.host and req.headers.host not in ['loves.money', 'www.loves.money', 'api.loves.money']
-		requestAlias = req.headers.host.replace(/\.loves\.money$/, '');
+		requestAlias = req.headers.host.replace(/\.loves\.money$/, '')
 
 		aliases = req.app.models.alias
 		aliases.findOne { src_name: requestAlias }, (err, alias) ->

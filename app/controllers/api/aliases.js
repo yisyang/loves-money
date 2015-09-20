@@ -30,14 +30,15 @@
   };
 
   controller.postAlias = function(req, res) {
-    var aliases, new_alias, _ref;
+    var aliases, currentUser, new_alias, _ref;
+    currentUser = req.app.get('user');
     aliases = req.app.models.alias;
     new_alias = {
+      customer_id: currentUser.uuid,
       src_name: req.body.alias,
       dest_domain: req.body.domain,
       dest_email: req.body.email,
-      customer_secret_hash: hmacSha1(req.body.secret, req.app.get('config').secret_keys.db_hash).toString(),
-      alias_secret: sha1(Math.random().toString()).toString()
+      customer_secret_hash: hmacSha1(req.body.secret, req.app.get('config').secret_keys.db_hash).toString()
     };
     if (!new_alias.src_name || ((_ref = new_alias.src_name) === 'abuse' || _ref === 'admin' || _ref === 'administrator' || _ref === 'billing' || _ref === 'hostmaster' || _ref === 'info' || _ref === 'postmaster' || _ref === 'ssl-admin' || _ref === 'support' || _ref === 'webmaster')) {
       res._cc.fail('Requested alias is reserved');
@@ -94,8 +95,8 @@
 
   controller.deleteAlias = function(req, res) {
     var aliases, _ref;
-    if (!req.body.alias_secret) {
-      return res._cc.fail('Missing parameter alias_secret', 401);
+    if (!req.body.secret) {
+      return res._cc.fail('Missing parameter secret');
     }
     if (!req.params.alias || ((_ref = req.params.alias) === 'abuse' || _ref === 'admin' || _ref === 'administrator' || _ref === 'billing' || _ref === 'hostmaster' || _ref === 'info' || _ref === 'postmaster' || _ref === 'ssl-admin' || _ref === 'support' || _ref === 'webmaster')) {
       res._cc.fail('Requested alias is reserved');
@@ -105,11 +106,18 @@
     aliases.findOne().where({
       src_name: req.params.alias
     }).then(function(alias) {
+      var currentUser, customer_secret_hash;
       if (!alias) {
         res._cc.fail('Alias not found');
         throw false;
       }
-      if (alias.alias_secret !== req.body.alias_secret) {
+      currentUser = req.app.get('user');
+      if (currentUser.uuid !== alias.customer_id && !currentUser.isAdmin) {
+        res._cc.fail('You are not the owner of this alias!', 401);
+        return;
+      }
+      customer_secret_hash = hmacSha1(req.body.secret, req.app.get('config').secret_keys.db_hash).toString();
+      if (customer_secret_hash !== alias.customer_secret_hash) {
         res._cc.fail('Incorrect secret', 401);
         throw false;
       }
@@ -134,9 +142,14 @@
   };
 
   controller.deleteAll = function(req, res) {
-    var aliases;
+    var aliases, currentUser;
     if (req.app.get('config').env === !'development') {
-      res._cc.fail('Invalid route, please use the UI at loves.money or view github source for valid requests.');
+      res._cc.fail('Forbidden', 403);
+      return;
+    }
+    currentUser = req.app.get('user');
+    if (!currentUser.isAdmin) {
+      res._cc.fail('Not authorized', 401);
       return;
     }
     aliases = req.app.models.alias;
@@ -155,15 +168,12 @@
 
   formatAlias = function(req, alias) {
     var result;
-    result = {
+    return result = {
+      customer_id: alias.customer_id,
       alias: alias.src_name,
       domain: alias.dest_domain,
       email: alias.dest_email
     };
-    if (req.headers['api-secret'] === req.app.get('config').secret_keys.api_secret) {
-      result.alias_secret = alias.alias_secret;
-    }
-    return result;
   };
 
   module.exports = controller;

@@ -27,7 +27,16 @@
           "method": "get",
           "url": "/:alias",
           "handler": "getAlias"
-        },
+        }
+      ]
+    },
+    {
+      "controller": "aliases.js",
+      "prefix": "/aliases",
+      "middlewares": [
+        "jwt-verify"
+      ],
+      "routes": [
         {
           "method": "post",
           "url": "/",
@@ -51,12 +60,21 @@
       "routes": [
         {
           "method": "post",
-          "url": "/",
+          "url": "/login",
           "handler": "postLogin"
-        },
+        }
+      ]
+    },
+    {
+      "controller": "auth.js",
+      "prefix": "/auth",
+      "middlewares": [
+        "jwt-verify"
+      ],
+      "routes": [
         {
           "method": "get",
-          "url": "/",
+          "url": "/refresh",
           "handler": "getRefresh"
         }
       ]
@@ -72,7 +90,17 @@
           "method": "get",
           "url": "/:uuid",
           "handler": "getCustomer"
-        },
+        }
+      ]
+    },
+    {
+      "controller": "customers.js",
+      "prefix": "/customers",
+      "middlewares": [
+        "jwt-verify",
+        "jwt-verify-admin"
+      ],
+      "routes": [
         {
           "method": "post",
           "url": "/",
