@@ -12,12 +12,15 @@ class AuthJwt
 
 		# Parse token, store result
 		try
-			parsed = jwt.verify(token, req.app.get('config').secret_keys.jwt_secret)
+			parsed = jwt.verify(token, req.app.get('config').jwt.secret)
 			req.app.set 'user', parsed
 
 			next()
 		catch err
-			res._cc.fail 'Invalid credentials', 401, null, err
+			if err.name is 'TokenExpiredError'
+				res._cc.fail 'Token expired', 401, null, err
+			else
+				res._cc.fail 'Invalid credentials', 401, null, err
 		return
 
 	# Convenience middleware for guarding a route to admins only, must be used after @verify

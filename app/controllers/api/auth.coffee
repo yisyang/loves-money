@@ -22,7 +22,10 @@ controller.postLogin = (req, res) ->
 			throw new Error('Customer not found or bad password')
 
 		# User logged in, issue JWT
-		token = jwt.sign(formatCustomer(customer), req.app.get('config').secret_keys.jwt_secret);
+		appConfig = req.app.get('config')
+		token = jwt.sign(formatCustomer(customer), appConfig.jwt.secret, {
+			expiresInMinutes: appConfig.jwt.expire_minutes
+		})
 		res._cc.success token
 		return
 	.catch (err) ->
@@ -37,7 +40,10 @@ controller.getRefresh = (req, res) ->
 	currentUser = req.app.get 'user'
 
 	# At this point credentials are verified by middleware, simply re-issue JWT using existing claims from req.user
-	token = jwt.sign(currentUser, req.app.get('config').secret_keys.jwt_secret);
+	appConfig = req.app.get('config')
+	token = jwt.sign(currentUser, appConfig.jwt.secret, {
+		expiresInMinutes: 1
+	})
 	res._cc.success token
 	return
 
@@ -47,6 +53,5 @@ formatCustomer = (customer) ->
 		uuid: customer.uuid
 		name: customer.name
 		email: customer.email
-	result
 
 module.exports = controller

@@ -17,12 +17,16 @@
       }
       token = (_ref1 = req.headers.authorization) != null ? _ref1.substring(7) : void 0;
       try {
-        parsed = jwt.verify(token, req.app.get('config').secret_keys.jwt_secret);
+        parsed = jwt.verify(token, req.app.get('config').jwt.secret);
         req.app.set('user', parsed);
         next();
       } catch (_error) {
         err = _error;
-        res._cc.fail('Invalid credentials', 401, null, err);
+        if (err.name === 'TokenExpiredError') {
+          res._cc.fail('Token expired', 401, null, err);
+        } else {
+          res._cc.fail('Invalid credentials', 401, null, err);
+        }
       }
     };
 

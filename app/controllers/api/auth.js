@@ -27,11 +27,14 @@
       }
       return false;
     }).then(function(customer) {
-      var token;
+      var appConfig, token;
       if (!customer) {
         throw new Error('Customer not found or bad password');
       }
-      token = jwt.sign(formatCustomer(customer), req.app.get('config').secret_keys.jwt_secret);
+      appConfig = req.app.get('config');
+      token = jwt.sign(formatCustomer(customer), appConfig.jwt.secret, {
+        expiresInMinutes: appConfig.jwt.expire_minutes
+      });
       res._cc.success(token);
     })["catch"](function(err) {
       if (err) {
@@ -42,20 +45,22 @@
   };
 
   controller.getRefresh = function(req, res) {
-    var currentUser, token;
+    var appConfig, currentUser, token;
     currentUser = req.app.get('user');
-    token = jwt.sign(currentUser, req.app.get('config').secret_keys.jwt_secret);
+    appConfig = req.app.get('config');
+    token = jwt.sign(currentUser, appConfig.jwt.secret, {
+      expiresInMinutes: 1
+    });
     res._cc.success(token);
   };
 
   formatCustomer = function(customer) {
     var result;
-    result = {
+    return result = {
       uuid: customer.uuid,
       name: customer.name,
       email: customer.email
     };
-    return result;
   };
 
   module.exports = controller;
