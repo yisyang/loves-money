@@ -1,3 +1,15 @@
+# IMPORTANT NOTES
+# 1. More specific paths must be defined before more general paths, so that the fixed ones can be resolved
+#
+#    Example:
+#        Url 1: /test/_all
+#        Url 2: /test/:anything
+#
+#    Url 1 must be placed before url 2 so that the request doesn't get hijacked by url 2
+#
+# 2. For the same path prefix, routesGroups not requiring auth middleware must be defined before ones requiring auth,
+#    so that the routes not requiring auth can still be resolved
+
 {
 	'subdomain': 'api'
 	'controllerPath': 'controllers/api'
@@ -28,6 +40,15 @@
 					'url': '/:alias'
 					'handler': 'getAlias'
 				}
+			]
+		}
+		{
+			'controller': 'aliases.js'
+			'prefix': '/aliases'
+			'middlewares': [
+				'jwt-verify'
+			]
+			'routes': [
 				{
 					'method': 'post'
 					'url': '/'
@@ -40,7 +61,6 @@
 				}
 				{
 					'method': 'delete'
-					# Note routes with manual entry must come after routes with fixed entry, so that the fixed ones will be resolved
 					'url': '/:alias'
 					'handler': 'deleteAlias'
 				}
@@ -52,12 +72,21 @@
 			'routes': [
 				{
 					'method': 'post'
-					'url': '/'
+					'url': '/login'
 					'handler': 'postLogin'
 				}
+			]
+		}
+		{
+			'controller': 'auth.js'
+			'prefix': '/auth'
+			'middlewares': [
+				'jwt-verify'
+			]
+			'routes': [
 				{
 					'method': 'get'
-					'url': '/'
+					'url': '/refresh'
 					'handler': 'getRefresh'
 				}
 			]
@@ -65,12 +94,25 @@
 		{
 			'controller': 'customers.js'
 			'prefix': '/customers'
+			'middlewares': [
+				'jwt-verify'
+			]
 			'routes': [
 				{
 					'method': 'get'
 					'url': '/:uuid'
 					'handler': 'getCustomer'
 				}
+			]
+		}
+		{
+			'controller': 'customers.js'
+			'prefix': '/customers'
+			'middlewares': [
+				'jwt-verify'
+				'jwt-verify-admin'
+			]
+			'routes': [
 				{
 					'method': 'post'
 					'url': '/'

@@ -11,7 +11,7 @@ controller.getAlias = (req, res) ->
 	aliases = req.app.models.alias
 	aliases.findOne { src_name: req.params.alias }, (err, alias) ->
 		if err
-			res._cc.fail 'Unable to get alias', null, err
+			res._cc.fail 'Unable to get alias', 500, null, err
 		if alias
 			res._cc.success formatAlias req, alias
 		else
@@ -20,17 +20,17 @@ controller.getAlias = (req, res) ->
 	return
 
 controller.postAlias = (req, res) ->
-	# TODO: verify req.user is logged in and add customer ID to new alias
+	currentUser = req.app.get 'user'
 
 	aliases = req.app.models.alias
 
 	# Prepare alias model data
 	new_alias =
+		customer_id: currentUser.uuid
 		src_name: req.body.alias
 		dest_domain: req.body.domain
 		dest_email: req.body.email
 		customer_secret_hash: hmacSha1(req.body.secret, req.app.get('config').secret_keys.db_hash).toString()
-		alias_secret: sha1(Math.random().toString()).toString()
 
 	if !new_alias.src_name or new_alias.src_name in ['abuse', 'admin', 'administrator', 'billing', 'hostmaster', 'info', 'postmaster', 'ssl-admin', 'support', 'webmaster']
 		res._cc.fail 'Requested alias is reserved'
@@ -52,7 +52,7 @@ controller.postAlias = (req, res) ->
 		.catch (err) ->
 			aliases.destroy { id: alias.id }, ->
 				return
-			res._cc.fail 'Error creating mail alias', null, err
+			res._cc.fail 'Error creating mail alias', 500, null, err
 			return
 		return
 	# Alias creation failed, attempt to find and report reason for failure
@@ -77,15 +77,15 @@ controller.postAlias = (req, res) ->
 			return
 		.catch (err) ->
 			if err
-				res._cc.fail 'Error creating alias', null, err
+				res._cc.fail 'Error creating alias', 500, null, err
 			return
 		return
 	return
 
 controller.deleteAlias = (req, res) ->
-	# Make sure that alias_secret is provided
-	if !req.body.alias_secret
-		return res._cc.fail 'Please provide the alias_secret'
+	# Make sure that alias secret is provided
+	if !req.body.secret
+		return res._cc.fail 'Missing parameter secret'
 
 	# Although such aliases would never exist due to the create sanitization, we're repeating the sanitization here
 	# for peace of mind
@@ -101,9 +101,16 @@ controller.deleteAlias = (req, res) ->
 			res._cc.fail 'Alias not found'
 			throw false
 
+		# Customer must have ownership over the alias, or must be an admin
+		currentUser = req.app.get 'user'
+		if currentUser.uuid isnt alias.customer_id and !currentUser.isAdmin
+			res._cc.fail 'You are not the owner of this alias!', 401
+			return
+
 		# Confirm ownership by matching customer_secret_hash
-		if alias.alias_secret isnt req.body.alias_secret
-			res._cc.fail 'Incorrect secret'
+		customer_secret_hash = hmacSha1(req.body.secret, req.app.get('config').secret_keys.db_hash).toString()
+		if customer_secret_hash isnt alias.customer_secret_hash
+			res._cc.fail 'Incorrect secret', 401
 			throw false
 
 		# Alias exists and ownership confirmed
@@ -123,20 +130,23 @@ controller.deleteAlias = (req, res) ->
 			return
 		# Failed to delete mailserver alias or customer alias
 		.catch (err) ->
-			res._cc.fail 'Unable to delete alias', null, err
+			res._cc.fail 'Unable to delete alias', 500, null, err
 			return
 		return
 	.catch (err) ->
 		if err
-			res._cc.fail 'Unable to get alias', null, err
+			res._cc.fail 'Unable to get alias', 500, null, err
 		return
 	return
 
 controller.deleteAll = (req, res) ->
-	# TODO: verify req.user is admin
-
 	if req.app.get('config').env is not 'development'
-		res._cc.fail 'Invalid route, please use the UI at loves.money or view github source for valid requests.'
+		res._cc.fail 'Forbidden', 403
+		return
+
+	currentUser = req.app.get 'user'
+	if !currentUser.isAdmin
+		res._cc.fail 'Not authorized', 401
 		return
 
 	aliases = req.app.models.alias
@@ -150,19 +160,16 @@ controller.deleteAll = (req, res) ->
 		return
 	.catch (err) ->
 		if err
-			res._cc.fail 'Unable to truncate aliases', null, err
+			res._cc.fail 'Unable to truncate aliases', 500, null, err
 		return
 	return
 
 # Format alias to only include public data
 formatAlias = (req, alias) ->
 	result =
+		customer_id: alias.customer_id
 		alias: alias.src_name
 		domain: alias.dest_domain
 		email: alias.dest_email
-	# If authorized, also return additional data
-	if req.headers['api-secret'] is req.app.get('config').secret_keys.api_secret
-		result.alias_secret = alias.alias_secret
-	result
 
 module.exports = controller

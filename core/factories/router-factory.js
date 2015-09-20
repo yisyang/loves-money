@@ -16,31 +16,45 @@
     routesConfig = require(file);
     router = {};
     router.registerRoutes = function(app) {
-      var config, controllerFileName, controllerMethods, controllerRouter, error, key, route, routes, routesController, routesGroup, _ref, _ref1;
+      var config, controllerFileName, controllerMethods, controllerRouter, error, key, middleware, middlewares, route, routeGroupIndex, routes, routesController, routesGroup, _i, _len, _ref, _ref1, _ref2, _ref3;
       routes = {};
       config = app.get('config');
+      middlewares = app.get('middlewares');
       _ref = routesConfig.routesGroups;
-      for (key in _ref) {
-        if (!__hasProp.call(_ref, key)) continue;
-        routesGroup = _ref[key];
+      for (routeGroupIndex in _ref) {
+        if (!__hasProp.call(_ref, routeGroupIndex)) continue;
+        routesGroup = _ref[routeGroupIndex];
         controllerFileName = routesGroup.controller;
-        if (routes[controllerFileName] == null) {
+        if (routes[routeGroupIndex] == null) {
           controllerRouter = express.Router();
           controllerMethods = require('../../' + config.appDir + '/' + routesConfig.controllerPath + '/' + controllerFileName);
           controllerRouter.controllerMethods = controllerMethods;
-          routes[controllerFileName] = controllerRouter;
+          routes[routeGroupIndex] = controllerRouter;
           if (routesConfig.viewPath) {
-            routesController = DynamicViewsHandler.attachControllerViews(routesConfig.viewPath, routes[controllerFileName]);
+            routesController = DynamicViewsHandler.attachControllerViews(routesConfig.viewPath, routes[routeGroupIndex]);
           } else {
-            routesController = DynamicViewsHandler.attachControllerViews(false, routes[controllerFileName]);
+            routesController = DynamicViewsHandler.attachControllerViews(false, routes[routeGroupIndex]);
           }
         }
-        _ref1 = routesGroup.routes;
-        for (key in _ref1) {
-          if (!__hasProp.call(_ref1, key)) continue;
-          route = _ref1[key];
+        if ((_ref1 = routesGroup.middlewares) != null ? _ref1.length : void 0) {
           try {
-            routes[controllerFileName][route.method](route.url, routes[controllerFileName]['controllerMethods'][route.handler]);
+            _ref2 = routesGroup.middlewares;
+            for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+              middleware = _ref2[_i];
+              routes[routeGroupIndex].use(middlewares[middleware]);
+            }
+          } catch (_error) {
+            error = _error;
+            console.log('Error registering middleware(s) for ' + controllerFileName);
+            throw error;
+          }
+        }
+        _ref3 = routesGroup.routes;
+        for (key in _ref3) {
+          if (!__hasProp.call(_ref3, key)) continue;
+          route = _ref3[key];
+          try {
+            routes[routeGroupIndex][route.method](route.url, routes[routeGroupIndex]['controllerMethods'][route.handler]);
           } catch (_error) {
             error = _error;
             console.log('Error registering route ' + route.handler + '.' + route.method);

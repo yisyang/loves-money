@@ -1,4 +1,4 @@
-browserify = require('browserify-middleware');
+browserify = require('browserify-middleware')
 express = require('express')
 path = require('path')
 favicon = require('serve-favicon')
@@ -39,9 +39,12 @@ app.use "/img", express.static path.join(__dirname, 'public', config.appDir, 'im
 app.use "/partials", express.static path.join(__dirname, 'public', config.appDir, 'partials')
 app.use "/templates", express.static path.join(__dirname, 'public', config.appDir, 'templates')
 
+# Register middlewares used in routes (or elsewhere)
+middlewares = require('./app/middlewares/loader.js')
+app.set 'middlewares', middlewares
+
 # Take care of customer defined redirects (example.loves.money to www.example.com)
-lovesMoneyRedirector = require('./app/middlewares/redirector.js')
-app.use lovesMoneyRedirector
+app.use middlewares['redirector']
 
 # Send favicon
 app.use favicon path.join(__dirname, 'public', config.appDir, 'img', 'favicon.ico')

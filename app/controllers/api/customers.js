@@ -15,13 +15,18 @@
   };
 
   controller.getCustomer = function(req, res) {
-    var customers;
+    var currentUser, customers;
+    currentUser = req.app.get('user');
+    if (currentUser.uuid !== req.params.uuid && !currentUser.isAdmin) {
+      res._cc.fail('Not authorized', 401);
+      return;
+    }
     customers = req.app.models.customer;
     customers.findOne({
       uuid: req.params.uuid
     }, function(err, customer) {
       if (err) {
-        res._cc.fail('Unable to get customer', null, err);
+        res._cc.fail('Unable to get customer', 500, null, err);
         return;
       }
       if (customer) {
@@ -35,7 +40,7 @@
   controller.postCustomer = function(req, res) {
     var customers;
     if (!req.body.name || !req.body.email || !req.body.pw_hash) {
-      res._cc.fail('Unable to add customer - missing required parameters');
+      res._cc.fail('Missing required parameters');
       return;
     }
     customers = req.app.models.customer;
@@ -43,7 +48,7 @@
       email: req.body.email
     }).then(function(customer) {
       if (customer) {
-        res._cc.fail('Customer email is already in use by an ' + (customer.active ? 'active' : 'inactive') + ' customer');
+        res._cc.fail('Customer email is already in use by an ' + (customer.active ? 'active' : 'inactive') + ' customer', 500);
         throw false;
       }
     }).then(function() {
@@ -52,7 +57,7 @@
       res._cc.success(formatCustomer(customer));
     })["catch"](function(err) {
       if (err) {
-        res._cc.fail('Error creating customer', null, err);
+        res._cc.fail('Error creating customer', 500, null, err);
       }
     });
   };
@@ -69,7 +74,7 @@
     }).then(function() {
       res._cc.success();
     })["catch"](function(err) {
-      res._cc.fail('Unable to delete customer', null, err);
+      res._cc.fail('Unable to delete customer', 500, null, err);
     });
   };
 

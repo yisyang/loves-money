@@ -9,10 +9,15 @@ controller.index = (req, res) ->
 	return
 
 controller.getCustomer = (req, res) ->
+	currentUser = req.app.get 'user'
+	if currentUser.uuid isnt req.params.uuid and !currentUser.isAdmin
+		res._cc.fail 'Not authorized', 401
+		return
+
 	customers = req.app.models.customer
 	customers.findOne { uuid: req.params.uuid }, (err, customer) ->
 		if err
-			res._cc.fail 'Unable to get customer', null, err
+			res._cc.fail 'Unable to get customer', 500, null, err
 			return
 		if customer
 			res._cc.success formatCustomer customer
@@ -22,11 +27,9 @@ controller.getCustomer = (req, res) ->
 	return
 
 controller.postCustomer = (req, res) ->
-	# TODO: verify req.user is admin
-
 	# Verify that everythng needed have been provided
 	if !req.body.name || !req.body.email || !req.body.pw_hash
-		res._cc.fail 'Unable to add customer - missing required parameters'
+		res._cc.fail 'Missing required parameters'
 		return
 
 	# Verify that the email address is not taken
@@ -35,7 +38,7 @@ controller.postCustomer = (req, res) ->
 	.then (customer) ->
 		# Existing customer found
 		if customer
-			res._cc.fail 'Customer email is already in use by an ' + (if customer.active then 'active' else 'inactive') + ' customer'
+			res._cc.fail 'Customer email is already in use by an ' + (if customer.active then 'active' else 'inactive') + ' customer', 500
 			throw false
 		return
 	.then () ->
@@ -47,14 +50,12 @@ controller.postCustomer = (req, res) ->
 		return
 	.catch (err) ->
 		if err
-			res._cc.fail 'Error creating customer', null, err
+			res._cc.fail 'Error creating customer', 500, null, err
 		return
 
 	return
 
 controller.deleteCustomer = (req, res) ->
-	# TODO: verify req.user is admin
-
 	customers = req.app.models.customer
 	# Attempt to delete customer by marking status as inactive
 	customers.findOne { uuid: req.params.uuid, active: true }
@@ -68,7 +69,7 @@ controller.deleteCustomer = (req, res) ->
 		return
 	# Deletion failed
 	.catch (err) ->
-		res._cc.fail 'Unable to delete customer', null, err
+		res._cc.fail 'Unable to delete customer', 500, null, err
 		return
 	return
 

@@ -11,7 +11,7 @@
   controller.postLogin = function(req, res) {
     var customers;
     if (!req.body.email || !req.body.pw_hash) {
-      res._cc.fail('Missing credentials');
+      res._cc.fail('Missing credentials', 401);
       return;
     }
     customers = req.app.models.customer;
@@ -27,34 +27,40 @@
       }
       return false;
     }).then(function(customer) {
-      var token;
+      var appConfig, token;
       if (!customer) {
         throw new Error('Customer not found or bad password');
       }
-      token = jwt.sign(formatCustomer(customer), req.app.get('config').secret_keys.jwt_secret);
+      appConfig = req.app.get('config');
+      token = jwt.sign(formatCustomer(customer), appConfig.jwt.secret, {
+        expiresInMinutes: appConfig.jwt.expire_minutes
+      });
       res._cc.success(token);
     })["catch"](function(err) {
       if (err) {
-        res._cc.fail('Invalid credentials', null, err);
+        res._cc.fail('Invalid credentials', 401, null, err);
         return;
       }
     });
   };
 
   controller.getRefresh = function(req, res) {
-    var token;
-    token = jwt.sign(req.user, req.app.get('config').secret_keys.jwt_secret);
+    var appConfig, currentUser, token;
+    currentUser = req.app.get('user');
+    appConfig = req.app.get('config');
+    token = jwt.sign(currentUser, appConfig.jwt.secret, {
+      expiresInMinutes: 1
+    });
     res._cc.success(token);
   };
 
   formatCustomer = function(customer) {
     var result;
-    result = {
+    return result = {
       uuid: customer.uuid,
       name: customer.name,
       email: customer.email
     };
-    return result;
   };
 
   module.exports = controller;

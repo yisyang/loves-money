@@ -6,57 +6,62 @@
 
   path = require('path');
 
-  ViewsHandler = {};
+  ViewsHandler = (function() {
+    function ViewsHandler() {}
 
-  ViewsHandler.setupViews = function(app, views) {
-    console.log("Setting up multi-views");
-    app.set('views', views);
-    app.set('multiViewsBase', views);
-    console.log("Using jade templating language");
-    if (app.get('config').env === 'development') {
-      console.log(" - using pretty mode");
-      app.locals.pretty = true;
-    }
-    app.set('view engine', 'jade');
-    app.use(function(req, res, next) {
-      if (!res._cc) {
-        res._cc = {};
+    ViewsHandler.setupViews = function(app, views) {
+      console.log("Setting up multi-views");
+      app.set('views', views);
+      app.set('multiViewsBase', views);
+      console.log("Using jade templating language");
+      if (app.get('config').env === 'development') {
+        console.log(" - using pretty mode");
+        app.locals.pretty = true;
       }
-      res._cc.resetViewPath = function() {
-        var viewsCore;
-        viewsCore = app.get('multiViewsBase');
-        views = _.cloneDeep(viewsCore);
-        return app.set('views', views);
-      };
-      res._cc.addViewPath = function(viewPath) {
-        var config;
-        views = app.get('views');
-        config = app.get('config');
-        return views.unshift(path.join(__dirname, '..', '..', config.appDir, viewPath));
-      };
-      next();
-    });
-  };
-
-  ViewsHandler.attachControllerViews = function(viewPath, routerFn) {
-    var addLocalPath;
-    addLocalPath = true;
-    if (typeof viewPath === "undefined" || viewPath === false) {
-      addLocalPath = false;
-    } else if (typeof viewPath !== "string") {
-      throw new Error("The first parameter must be a string representing the view path");
-    }
-    if (!routerFn || typeof routerFn !== "function" || routerFn.length < 3) {
-      throw new Error("The second parameter must be a function that handles fn(req, res, next) params.");
-    }
-    return function(req, res, next) {
-      res._cc.resetViewPath();
-      if (addLocalPath) {
-        res._cc.addViewPath(viewPath);
-      }
-      return routerFn(req, res, next);
+      app.set('view engine', 'jade');
+      app.use(function(req, res, next) {
+        if (!res._cc) {
+          res._cc = {};
+        }
+        res._cc.resetViewPath = function() {
+          var viewsCore;
+          viewsCore = app.get('multiViewsBase');
+          views = _.cloneDeep(viewsCore);
+          return app.set('views', views);
+        };
+        res._cc.addViewPath = function(viewPath) {
+          var config;
+          views = app.get('views');
+          config = app.get('config');
+          return views.unshift(path.join(__dirname, '..', '..', config.appDir, viewPath));
+        };
+        next();
+      });
     };
-  };
+
+    ViewsHandler.attachControllerViews = function(viewPath, routerFn) {
+      var addLocalPath;
+      addLocalPath = true;
+      if (typeof viewPath === "undefined" || viewPath === false) {
+        addLocalPath = false;
+      } else if (typeof viewPath !== "string") {
+        throw new Error("The first parameter must be a string representing the view path");
+      }
+      if (!routerFn || typeof routerFn !== "function" || routerFn.length < 3) {
+        throw new Error("The second parameter must be a function that handles fn(req, res, next) params.");
+      }
+      return function(req, res, next) {
+        res._cc.resetViewPath();
+        if (addLocalPath) {
+          res._cc.addViewPath(viewPath);
+        }
+        return routerFn(req, res, next);
+      };
+    };
+
+    return ViewsHandler;
+
+  })();
 
   module.exports = ViewsHandler;
 

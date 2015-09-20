@@ -91,26 +91,23 @@
       }
       res.end();
     };
-    res._cc.fail = function(message, jsonBody, err) {
-      if (req.app.get('config').env === 'development' && (err != null)) {
-        res.json({
-          success: false,
-          message: message,
-          data: jsonBody,
-          error: err
-        });
-      } else if (jsonBody != null) {
-        res.json({
-          success: false,
-          message: message,
-          data: jsonBody
-        });
-      } else {
-        res.json({
-          success: false,
-          message: message
-        });
+    res._cc.fail = function(message, httpStatus, jsonBody, err) {
+      var output;
+      if (httpStatus == null) {
+        httpStatus = 400;
       }
+      res.status(httpStatus);
+      output = {
+        success: false,
+        message: message
+      };
+      if (req.app.get('config').env === 'development' && (err != null)) {
+        output.error = err;
+      }
+      if (jsonBody != null) {
+        output.data = jsonBody;
+      }
+      res.json(output);
       res.end();
     };
     next();

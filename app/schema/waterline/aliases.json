@@ -41,7 +41,6 @@
       "required": true,
       "notNull": true
     },
-    "alias_secret": "string",
     "customer_id": {
       "model": "customer"
     }
