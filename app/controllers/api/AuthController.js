@@ -61,7 +61,8 @@
     return {
       id: customer.id,
       name: customer.name,
-      email: customer.email
+      email: customer.email,
+      isAdmin: customer.isAdmin
     };
   };
 

@@ -22,13 +22,15 @@
 			unique: true # Unique index
 			required: true
 			notNull: true
-		active:
+		isActive:
+			columnName: 'active',
 			type: "boolean",
 			size: 1,
 			defaultsTo: true,
 			boolean: true,
 			notNull: true
-		admin:
+		isAdmin:
+			columnName: 'admin',
 			type: "boolean",
 			size: 1,
 			defaultsTo: false,

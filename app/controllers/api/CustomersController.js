@@ -73,13 +73,13 @@
         email: req.body.email
       }).then(function(customer) {
         if (customer) {
-          res._cc.fail('Customer email is already in use by an ' + (customer.active ? 'active' : 'inactive') + ' customer', 500);
+          res._cc.fail('Customer email is already in use by an ' + (customer.isActive ? 'active' : 'inactive') + ' customer', 500);
           throw false;
         }
       }).then(function() {
         return CustomersController.createCustomer(req);
       }).then(function(customer) {
-        res._cc.success(formatCustomer(customer));
+        res._cc.success(CustomersController.formatCustomer(customer));
       })["catch"](function(err) {
         if (err) {
           res._cc.fail('Error creating customer', 500, null, err);
@@ -90,9 +90,9 @@
     CustomersController.deleteCustomer = function(req, res) {
       req.app.getModel('Customer').findOne({
         id: req.params.id,
-        active: true
+        isActive: true
       }).then(function(customer) {
-        customer.active = false;
+        customer.isActive = false;
         return customer.save();
       }).then(function() {
         res._cc.success();

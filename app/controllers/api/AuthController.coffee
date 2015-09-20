@@ -54,6 +54,7 @@ formatCustomer = (customer) ->
 		id: customer.id
 		name: customer.name
 		email: customer.email
+		isAdmin: customer.isAdmin
 	}
 
 module.exports = AuthController

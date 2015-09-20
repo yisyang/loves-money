@@ -69,7 +69,7 @@ class CustomersController
 		.then (customer) ->
 			# Existing customer found
 			if customer
-				res._cc.fail 'Customer email is already in use by an ' + (if customer.active then 'active' else 'inactive') + ' customer', 500
+				res._cc.fail 'Customer email is already in use by an ' + (if customer.isActive then 'active' else 'inactive') + ' customer', 500
 				throw false
 			return
 		.then () ->
@@ -77,7 +77,7 @@ class CustomersController
 			CustomersController.createCustomer req
 		.then (customer) ->
 			# Customer successfully created
-			res._cc.success formatCustomer customer
+			res._cc.success CustomersController.formatCustomer customer
 			return
 		.catch (err) ->
 			if err
@@ -88,10 +88,10 @@ class CustomersController
 
 	@deleteCustomer: (req, res) ->
 		# Attempt to delete customer by marking status as inactive
-		req.app.getModel('Customer').findOne { id: req.params.id, active: true }
+		req.app.getModel('Customer').findOne { id: req.params.id, isActive: true }
 		# Customer found
 		.then (customer) ->
-			customer.active = false
+			customer.isActive = false
 			customer.save()
 		# Soft delete successful
 		.then () ->
