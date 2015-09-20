@@ -54,7 +54,7 @@ RoutesGroupFactory.createRouter = (file) ->
 
 			# Register routes to app and subdomain
 			routesConfig.subdomain = '' if !routesConfig.subdomain?
-			app.use routesGroup.prefix, SubdomainsHandler(routesConfig.subdomain, routesController)
+			app.use routesGroup.prefix, SubdomainsHandler.createRoutes(routesConfig.subdomain, routesController)
 
 		true
 

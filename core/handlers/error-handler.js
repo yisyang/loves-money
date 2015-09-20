@@ -4,114 +4,119 @@
 
   _ = require('lodash');
 
-  ErrorHandler = {};
+  ErrorHandler = (function() {
+    function ErrorHandler() {}
 
-  ErrorHandler.createError = function(msg, params) {
-    var err;
-    err = new Error(msg);
-    if (params) {
-      _.assign(err, params);
-    }
-    err.status = err.status || 500;
-    return err;
-  };
-
-  ErrorHandler.displayError = function(res, err, env) {
-    var errDisplay;
-    if (env === "development") {
-      errDisplay = err;
-    } else {
-      errDisplay = {
-        status: err.status,
-        message: err.message
-      };
-    }
-    res.status(err.status || 500);
-    res.render("error", {
-      title: 'Error',
-      error: errDisplay
-    });
-  };
-
-  ErrorHandler.createAppError = function(msg, params) {
-    return function(req, res, next) {
+    ErrorHandler.createError = function(msg, params) {
       var err;
-      err = ErrorHandler.createError(msg, params);
-      next(err);
-    };
-  };
-
-  ErrorHandler.displayAppError = function(errOverwrite) {
-    return function(err, req, res, next) {
-      if (errOverwrite) {
-        err = errOverwrite;
+      err = new Error(msg);
+      if (params) {
+        _.assign(err, params);
       }
-      ErrorHandler.displayError(res, err, req.app.get('config').env);
+      err.status = err.status || 500;
+      return err;
     };
-  };
 
-  ErrorHandler.renderRouterError = function(msg, params) {
-    return function(req, res) {
-      var err;
-      err = ErrorHandler.createError(msg, params);
-      ErrorHandler.displayError(res, err, req.app.get('config').env);
-    };
-  };
-
-  ErrorHandler.displayResErrorFactory = function(res, env) {
-    return function(err) {
-      ErrorHandler.displayError(res, err, env);
-    };
-  };
-
-  ErrorHandler.renderResErrorFactory = function(res, env) {
-    return function(msg, params) {
-      var err;
-      err = ErrorHandler.createError(msg, params);
-      ErrorHandler.displayError(res, err, env);
-    };
-  };
-
-  ErrorHandler.resRenderer = function(req, res, next) {
-    if (!res._cc) {
-      res._cc = {};
-    }
-    res._cc.displayError = ErrorHandler.displayResErrorFactory(res, req.app.get('config').env);
-    res._cc.renderError = ErrorHandler.renderResErrorFactory(res, req.app.get('config').env);
-    res._cc.success = function(jsonBody) {
-      if (jsonBody != null) {
-        res.json({
-          success: true,
-          data: jsonBody
-        });
+    ErrorHandler.displayError = function(res, err, env) {
+      var errDisplay;
+      if (env === "development") {
+        errDisplay = err;
       } else {
-        res.json({
-          success: true
-        });
+        errDisplay = {
+          status: err.status,
+          message: err.message
+        };
       }
-      res.end();
+      res.status(err.status || 500);
+      res.render("error", {
+        title: 'Error',
+        error: errDisplay
+      });
     };
-    res._cc.fail = function(message, httpStatus, jsonBody, err) {
-      var output;
-      if (httpStatus == null) {
-        httpStatus = 400;
-      }
-      res.status(httpStatus);
-      output = {
-        success: false,
-        message: message
+
+    ErrorHandler.createAppError = function(msg, params) {
+      return function(req, res, next) {
+        var err;
+        err = ErrorHandler.createError(msg, params);
+        next(err);
       };
-      if (req.app.get('config').env === 'development' && (err != null)) {
-        output.error = err;
-      }
-      if (jsonBody != null) {
-        output.data = jsonBody;
-      }
-      res.json(output);
-      res.end();
     };
-    next();
-  };
+
+    ErrorHandler.displayAppError = function(errOverwrite) {
+      return function(err, req, res, next) {
+        if (errOverwrite) {
+          err = errOverwrite;
+        }
+        ErrorHandler.displayError(res, err, req.app.get('config').env);
+      };
+    };
+
+    ErrorHandler.renderRouterError = function(msg, params) {
+      return function(req, res) {
+        var err;
+        err = ErrorHandler.createError(msg, params);
+        ErrorHandler.displayError(res, err, req.app.get('config').env);
+      };
+    };
+
+    ErrorHandler.displayResErrorFactory = function(res, env) {
+      return function(err) {
+        ErrorHandler.displayError(res, err, env);
+      };
+    };
+
+    ErrorHandler.renderResErrorFactory = function(res, env) {
+      return function(msg, params) {
+        var err;
+        err = ErrorHandler.createError(msg, params);
+        ErrorHandler.displayError(res, err, env);
+      };
+    };
+
+    ErrorHandler.resRenderer = function(req, res, next) {
+      if (!res._cc) {
+        res._cc = {};
+      }
+      res._cc.displayError = ErrorHandler.displayResErrorFactory(res, req.app.get('config').env);
+      res._cc.renderError = ErrorHandler.renderResErrorFactory(res, req.app.get('config').env);
+      res._cc.success = function(jsonBody) {
+        if (jsonBody != null) {
+          res.json({
+            success: true,
+            data: jsonBody
+          });
+        } else {
+          res.json({
+            success: true
+          });
+        }
+        res.end();
+      };
+      res._cc.fail = function(message, httpStatus, jsonBody, err) {
+        var output;
+        if (httpStatus == null) {
+          httpStatus = 400;
+        }
+        res.status(httpStatus);
+        output = {
+          success: false,
+          message: message
+        };
+        if (req.app.get('config').env === 'development' && (err != null)) {
+          output.error = err;
+        }
+        if (jsonBody != null) {
+          output.data = jsonBody;
+        }
+        res.json(output);
+        res.end();
+      };
+      next();
+    };
+
+    return ErrorHandler;
+
+  })();
 
   module.exports = ErrorHandler;
 

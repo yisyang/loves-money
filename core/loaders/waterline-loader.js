@@ -11,37 +11,42 @@
 
   WaterlineMysqlAdapter = require('sails-mysql');
 
-  RoutesLoader = {};
+  RoutesLoader = (function() {
+    function RoutesLoader() {}
 
-  RoutesLoader.orm = new Waterline;
+    RoutesLoader.orm = new Waterline;
 
-  RoutesLoader.updateAdapters = function(dbConfig) {
-    var adapter, key, _ref;
-    console.log('Updating DB adapters');
-    _ref = dbConfig.adapters;
-    for (key in _ref) {
-      if (!__hasProp.call(_ref, key)) continue;
-      adapter = _ref[key];
-      if (adapter === 'mysqlAdapter') {
-        dbConfig.adapters[key] = WaterlineMysqlAdapter;
+    RoutesLoader.updateAdapters = function(dbConfig) {
+      var adapter, key, _ref;
+      console.log('Updating DB adapters');
+      _ref = dbConfig.adapters;
+      for (key in _ref) {
+        if (!__hasProp.call(_ref, key)) continue;
+        adapter = _ref[key];
+        if (adapter === 'mysqlAdapter') {
+          dbConfig.adapters[key] = WaterlineMysqlAdapter;
+        }
       }
-    }
-    return dbConfig;
-  };
+      return dbConfig;
+    };
 
-  RoutesLoader.loadModels = function(modelsDir) {
-    console.log('Loading models');
-    walk.walkSync(modelsDir, function(basedir, filename, stat) {
-      var re, schemaJson;
-      re = /(?:\.([^.]+))?$/;
-      if ((filename.indexOf(".") !== 0) && (filename.indexOf("_") !== 0) && (re.exec(filename)[1] === "json")) {
-        console.log(' - ' + filename);
-        schemaJson = require(path.join(basedir, filename));
-        return RoutesLoader.orm.loadCollection(Waterline.Collection.extend(schemaJson));
-      }
-    });
+    RoutesLoader.loadModels = function(modelsDir) {
+      console.log('Loading models');
+      walk.walkSync(modelsDir, function(basedir, filename, stat) {
+        var re, schemaJson;
+        re = /(?:\.([^.]+))?$/;
+        if ((filename.indexOf(".") !== 0) && (filename.indexOf("_") !== 0) && (re.exec(filename)[1] === "json")) {
+          console.log(' - ' + filename);
+          schemaJson = require(path.join(basedir, filename));
+          return RoutesLoader.orm.loadCollection(Waterline.Collection.extend(schemaJson));
+        }
+      });
+      return RoutesLoader;
+    };
+
     return RoutesLoader;
-  };
+
+  })();
 
   module.exports = RoutesLoader;
 

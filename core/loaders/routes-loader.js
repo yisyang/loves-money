@@ -9,30 +9,35 @@
 
   RoutesGroupFactory = require('../factories/router-factory.js');
 
-  RoutesLoader = {};
+  RoutesLoader = (function() {
+    function RoutesLoader() {}
 
-  RoutesLoader.routers = [];
+    RoutesLoader.routers = [];
 
-  RoutesLoader.loadRoutes = function(routesDir) {
-    walk.walkSync(routesDir, function(basedir, filename, stat) {
-      var re;
-      re = /(?:\.([^.]+))?$/;
-      if ((filename.indexOf(".") !== 0) && (filename.indexOf("_") !== 0) && (re.exec(filename)[1] === "json")) {
-        return RoutesLoader.routers.push(RoutesGroupFactory.createRouter(path.join(basedir, filename)));
+    RoutesLoader.loadRoutes = function(routesDir) {
+      walk.walkSync(routesDir, function(basedir, filename, stat) {
+        var re;
+        re = /(?:\.([^.]+))?$/;
+        if ((filename.indexOf(".") !== 0) && (filename.indexOf("_") !== 0) && (re.exec(filename)[1] === "json")) {
+          return RoutesLoader.routers.push(RoutesGroupFactory.createRouter(path.join(basedir, filename)));
+        }
+      });
+      return RoutesLoader;
+    };
+
+    RoutesLoader.registerRoutes = function(app) {
+      var key, router, _ref;
+      _ref = this.routers;
+      for (key in _ref) {
+        if (!__hasProp.call(_ref, key)) continue;
+        router = _ref[key];
+        router.registerRoutes(app);
       }
-    });
-    return RoutesLoader;
-  };
+    };
 
-  RoutesLoader.registerRoutes = function(app) {
-    var key, router, _ref;
-    _ref = this.routers;
-    for (key in _ref) {
-      if (!__hasProp.call(_ref, key)) continue;
-      router = _ref[key];
-      router.registerRoutes(app);
-    }
-  };
+    return RoutesLoader;
+
+  })();
 
   module.exports = RoutesLoader;
 

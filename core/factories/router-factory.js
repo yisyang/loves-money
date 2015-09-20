@@ -64,7 +64,7 @@
         if (routesConfig.subdomain == null) {
           routesConfig.subdomain = '';
         }
-        app.use(routesGroup.prefix, SubdomainsHandler(routesConfig.subdomain, routesController));
+        app.use(routesGroup.prefix, SubdomainsHandler.createRoutes(routesConfig.subdomain, routesController));
       }
       return true;
     };
