@@ -4,13 +4,62 @@
   "viewPath": "views/ui",
   "routesGroups": [
     {
-      "controller": "index.js",
+      "controller": "IndexController.js",
       "prefix": "/",
       "routes": [
         {
           "method": "get",
           "url": "/",
           "handler": "index"
+        },
+        {
+          "method": "get",
+          "url": "/index",
+          "handler": "index"
+        }
+      ]
+    },
+    {
+      "controller": "IndexController.js",
+      "prefix": "/",
+      "routes": [
+        {
+          "method": "get",
+          "url": "/about",
+          "handler": "about"
+        }
+      ]
+    },
+    {
+      "controller": "IndexController.js",
+      "prefix": "/",
+      "routes": [
+        {
+          "method": "get",
+          "url": "/contact",
+          "handler": "contact"
+        }
+      ]
+    },
+    {
+      "controller": "IndexController.js",
+      "prefix": "/",
+      "routes": [
+        {
+          "method": "get",
+          "url": "/demo",
+          "handler": "demo"
+        }
+      ]
+    },
+    {
+      "controller": "IndexController.js",
+      "prefix": "/",
+      "routes": [
+        {
+          "method": "get",
+          "url": "/pricing",
+          "handler": "pricing"
         }
       ]
     }

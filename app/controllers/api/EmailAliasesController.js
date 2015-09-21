@@ -28,7 +28,11 @@
       req.app.getModel('EmailAlias').findOne({
         srcName: req.params.alias
       }).then(function(emailAlias) {
+        var destEmailDomain, destEmailName;
         if (emailAlias) {
+          destEmailName = emailAlias.destEmail.substring(0, 1) + '*******';
+          destEmailDomain = emailAlias.destEmail.substring(emailAlias.destEmail.indexOf('@'));
+          emailAlias.destEmail = destEmailName + destEmailDomain;
           res._cc.success(EmailAliasesController.formatAlias(emailAlias));
         } else {
           res._cc.fail('Alias not found');

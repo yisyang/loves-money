@@ -1,17 +1,43 @@
 body {
   background-color: #fafafa;
 }
-i.icon.green {
+.lm-green {
   color: #008000;
 }
-i.icon.red {
+.lm-red {
   color: #f00;
+}
+.lm-blue {
+  color: #005779;
+}
+.lm-spacing-margin.above {
+  margin-top: 1em;
+}
+.lm-spacing-margin.above.double {
+  margin-top: 2em;
+}
+.lm-spacing-margin.below {
+  margin-bottom: 1em;
+}
+.lm-spacing-margin.below.double {
+  margin-bottom: 2em;
+}
+.page-container {
+  position: relative;
+  top: 0;
+  left: 0;
+  min-height: 100%;
 }
 .page-container >.header {
   height: 5em;
 }
-.page-container >.footer>.sticky {
+.page-container >.content {
+  padding-bottom: 5em;
+}
+.page-container >.footer {
   width: 100%;
+  position: absolute;
+  bottom: 0;
 }
 .ui.button.vertical-align-middle {
   vertical-align: middle;
@@ -19,9 +45,21 @@ i.icon.red {
 .ui.footer.segment {
   margin: 2em 0 0 0;
 }
+.ui.header.lm-spacing-margin.above {
+  margin-top: 1em;
+}
+.ui.header.lm-spacing-margin.above.double {
+  margin-top: 2em;
+}
+.ui.header.lm-spacing-margin.below {
+  margin-bottom: 1em;
+}
+.ui.header.lm-spacing-margin.below.double {
+  margin-bottom: 2em;
+}
 .ui.inverted.menu,
 .ui.inverted.segment {
-  background-color: #004f6e;
+  background-color: #005779;
 }
 .ui.menu .item img.logo {
   margin-right: 1.5em;

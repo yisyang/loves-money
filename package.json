@@ -32,7 +32,7 @@
     "passport-jwt": "^1.1.1",
     "redis": "^0.10.3",
     "sails-mysql": "~0.10.11",
-    "semantic-ui-css": "^2.0.8",
+    "semantic-ui-css": "^2.1.4",
     "serve-favicon": "^2.2.0",
     "uuid": "~2.0.1",
     "waterline": "~0.10.18"

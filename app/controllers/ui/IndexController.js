@@ -6,9 +6,23 @@
     function IndexController() {}
 
     IndexController.index = function(req, res) {
-      res.render("index", {
-        title: "loves.money - BETA - domain and email forwarding service"
-      });
+      res.render("index");
+    };
+
+    IndexController.about = function(req, res) {
+      res.render("about");
+    };
+
+    IndexController.contact = function(req, res) {
+      res.render("contact");
+    };
+
+    IndexController.demo = function(req, res) {
+      res.render("demo");
+    };
+
+    IndexController.pricing = function(req, res) {
+      res.render("pricing");
     };
 
     return IndexController;

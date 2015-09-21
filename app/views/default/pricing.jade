@@ -1,0 +1,121 @@
+extends layout
+
+block vars
+	- var pageTitle = 'Pricing'
+
+block content
+	h1.ui.dividing.header.center.aligned
+		i.icon.dollar.lm-blue
+		= pageTitle
+	.ui.container.center.aligned
+		h2.ui.dividing.header.center.aligned.double.lm-spacing-margin.above
+			| Plans
+		table.ui.selectable.celled.padded.center.aligned.table
+			thead
+				tr
+					th.single.line Features \ Plan
+					th Free
+					th Supporter
+					th Team
+			tbody
+				tr
+					th
+						| Number of domain aliases
+					td
+						| 1
+					td
+						| 5
+					td
+						| 25
+				tr
+					th
+						| Daily redirects per domain
+					td
+						| 100
+					td
+						| 10k
+					td
+						| 100k
+				tr
+					th
+						| Ad-free redirects
+					td
+						i.icon.checkmark.lm-green
+					td
+						i.icon.checkmark.lm-green
+					td
+						i.icon.checkmark.lm-green
+				tr
+					th
+						| Manual review of suspicious activity
+					td
+						i.icon.remove.lm-red
+					td
+						i.icon.checkmark.lm-green
+					td
+						i.icon.checkmark.lm-green
+				tr
+					th
+						| High availability
+					td
+						i.icon.remove.lm-red
+					td
+						i.icon.remove.lm-red
+					td
+						i.icon.checkmark.lm-green
+				tr
+					th
+						| Number of email aliases
+					td
+						| 1
+					td
+						| 5
+					td
+						| 50
+				tr
+					th
+						| Daily redirects per email address
+					td
+						| 1k
+					td
+						| 100k
+					td
+						| 100k
+				tr
+					th
+						| Add-ons available
+					td
+						i.icon.remove.lm-red
+					td
+						i.icon.checkmark.lm-green
+					td
+						i.icon.checkmark.lm-green
+
+		h2.ui.dividing.header.center.aligned.double.lm-spacing-margin.above
+			| Add-ons
+		table.ui.selectable.celled.padded.center.aligned.table
+			thead
+				tr
+					th Add-ons
+					th Cost
+			tbody
+				tr
+					th
+						| Domain aliases
+					td
+						| $1 / ea. / mo.
+				tr
+					th
+						| Email aliases
+					td
+						| $1 / ea. / mo.
+				tr
+					th
+						| Domain redirects
+					td
+						| $0.02 / 1k
+				tr
+					th
+						| Email redirects
+					td
+						| $0.01 / 1k

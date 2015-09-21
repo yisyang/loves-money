@@ -20,6 +20,10 @@ class EmailAliasesController
 		req.app.getModel('EmailAlias').findOne { srcName: req.params.alias }
 		.then (emailAlias) ->
 			if emailAlias
+				# Sanitize email address before output
+				destEmailName = emailAlias.destEmail.substring(0, 1) + '*******'
+				destEmailDomain = emailAlias.destEmail.substring(emailAlias.destEmail.indexOf('@'))
+				emailAlias.destEmail = destEmailName + destEmailDomain
 				res._cc.success EmailAliasesController.formatAlias emailAlias
 			else
 				res._cc.fail 'Alias not found'
