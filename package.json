@@ -7,6 +7,7 @@
   "scripts": {
     "start": "pm2 start ./config/config-pm2.json",
     "stop": "pm2 stop ./config/config-pm2.json --watch 0",
+    "browserify": " browserify browserify-requires.js -o public/app/js/browserify-bundle.js",
     "test": "mocha ./test/test.js",
     "test-ui": "mocha ./test/ui.js"
   },
