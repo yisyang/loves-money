@@ -2,14 +2,17 @@ extends layout
 
 block vars
 	- var pageTitle = 'Demo'
-	- var pageAdditionalScripts = ['/js/demo.js']
+	- var pageAdditionalScripts = ['/js/demo.js', '//cdn.jsdelivr.net/bluebird/2.9.3/bluebird.min.js', '//cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.js']
 
 block content
 	h1.ui.dividing.header.center.aligned
 		i.icon.play.circle.o.lm-blue
 		= pageTitle
 
-	p This page is currently under development, please come back in 24 hours
+	p
+		| The demo page lets you add and delete aliases using the demo customer. Please note any aliases added by
+		| anyone using this page can be deleted by anyone else using this page.
+
 	.ui.container
 		.ui.pointing.menu.demo-menu
 			a.active.item(data-value='lookup')
@@ -54,5 +57,5 @@ block content
 			.ui.error.message
 
 		.ui.black.inverted.segment
-			pre
+			pre.demo-response-holder
 				| Response will be displayed here
