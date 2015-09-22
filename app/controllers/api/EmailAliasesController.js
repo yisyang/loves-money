@@ -13,7 +13,7 @@
     EmailAliasesController.reservedAliases = ['', 'abuse', 'admin', 'administrator', 'billing', 'help', 'hostmaster', 'info', 'postmaster', 'ssl-admin', 'support', 'webmaster'];
 
     EmailAliasesController.getIndex = function(req, res) {
-      res._cc.fail('Invalid route, please use the UI at loves.money or view github source for valid requests.');
+      res.fail('Invalid route, please use the UI at loves.money or view github source for valid requests.');
     };
 
     EmailAliasesController.formatAlias = function(alias) {
@@ -33,12 +33,12 @@
           destEmailName = emailAlias.destEmail.substring(0, 1) + '*******';
           destEmailDomain = emailAlias.destEmail.substring(emailAlias.destEmail.indexOf('@'));
           emailAlias.destEmail = destEmailName + destEmailDomain;
-          res._cc.success(EmailAliasesController.formatAlias(emailAlias));
+          res.success(EmailAliasesController.formatAlias(emailAlias));
         } else {
-          res._cc.fail('Alias not found');
+          res.fail('Alias not found');
         }
       })["catch"](function(err) {
-        res._cc.fail('Unable to get alias', 500, null, err);
+        res.fail('Unable to get alias', 500, null, err);
       });
     };
 
@@ -51,7 +51,7 @@
         destEmail: req.body.email
       };
       if (!newAlias.srcName || (_ref = newAlias.srcName, __indexOf.call(EmailAliasesController.reservedAliases, _ref) >= 0)) {
-        res._cc.fail('Requested alias is reserved');
+        res.fail('Requested alias is reserved');
         return;
       }
       EmailAlias = req.app.getModel('EmailAlias');
@@ -61,19 +61,19 @@
           source: newAlias.srcName + '@loves.money',
           destination: newAlias.destEmail
         }).then(function() {
-          return res._cc.success(EmailAliasesController.formatAlias(alias));
+          return res.success(EmailAliasesController.formatAlias(alias));
         })["catch"](function(err) {
           EmailAlias.destroy({
             id: alias.id
           }, function() {});
-          res._cc.fail('Error creating mail alias', 500, null, err);
+          res.fail('Error creating mail alias', 500, null, err);
         });
       })["catch"](function(err) {
         EmailAlias.findOne().where({
           srcName: newAlias.srcName
         }).then(function(alias) {
           if (alias) {
-            res._cc.fail('The alias is already registered');
+            res.fail('The alias is already registered');
             throw false;
           }
           return EmailAlias.findOne().where({
@@ -83,14 +83,14 @@
           });
         }).then(function(alias) {
           if (alias) {
-            res._cc.fail('The email is already registered');
+            res.fail('The email is already registered');
             throw false;
           } else {
             throw err;
           }
         })["catch"](function(err) {
           if (err) {
-            res._cc.fail('Error creating alias', 500, null, err);
+            res.fail('Error creating alias', 500, null, err);
           }
         });
       });
@@ -99,7 +99,7 @@
     EmailAliasesController.deleteAlias = function(req, res) {
       var EmailAlias, _ref;
       if (!req.params.alias || (_ref = req.params.alias, __indexOf.call(EmailAliasesController.reservedAliases, _ref) >= 0)) {
-        res._cc.fail('Requested alias is reserved');
+        res.fail('Requested alias is reserved');
         return;
       }
       EmailAlias = req.app.getModel('EmailAlias');
@@ -108,12 +108,12 @@
       }).then(function(alias) {
         var currentUser;
         if (!alias) {
-          res._cc.fail('Alias not found');
+          res.fail('Alias not found');
           throw false;
         }
         currentUser = req.app.get('user');
         if (currentUser.id !== alias.customerId && !currentUser.isAdmin) {
-          res._cc.fail('You are not the owner of this alias!', 401);
+          res.fail('You are not the owner of this alias!', 401);
           return;
         }
         req.app.getModel('VirtualAlias').destroy({
@@ -125,13 +125,13 @@
             id: alias.id
           });
         }).then(function() {
-          res._cc.success();
+          res.success();
         })["catch"](function(err) {
-          res._cc.fail('Unable to delete alias', 500, null, err);
+          res.fail('Unable to delete alias', 500, null, err);
         });
       })["catch"](function(err) {
         if (err) {
-          res._cc.fail('Unable to get alias', 500, null, err);
+          res.fail('Unable to get alias', 500, null, err);
         }
       });
     };
@@ -139,12 +139,12 @@
     EmailAliasesController.deleteAll = function(req, res) {
       var currentUser;
       if (req.app.get('config').env === !'development') {
-        res._cc.fail('Forbidden', 403);
+        res.fail('Forbidden', 403);
         return;
       }
       currentUser = req.app.get('user');
       if (!currentUser.isAdmin) {
-        res._cc.fail('Not authorized', 401);
+        res.fail('Not authorized', 401);
         return;
       }
       req.app.getModel('EmailAlias').query('TRUNCATE TABLE email_aliases').then(function() {
@@ -152,10 +152,10 @@
           custom: true
         });
       }).then(function() {
-        res._cc.success();
+        res.success();
       })["catch"](function(err) {
         if (err) {
-          res._cc.fail('Unable to truncate aliases', 500, null, err);
+          res.fail('Unable to truncate aliases', 500, null, err);
         }
       });
     };

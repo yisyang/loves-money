@@ -13,7 +13,7 @@
     DomainAliasesController.reservedAliases = ['', 'api', 'admin', 'administrator', 'billing', 'help', 'info', 'ssl-admin', 'support', 'www'];
 
     DomainAliasesController.getIndex = function(req, res) {
-      res._cc.fail('Invalid route, please use the UI at loves.money or view github source for valid requests.');
+      res.fail('Invalid route, please use the UI at loves.money or view github source for valid requests.');
     };
 
     DomainAliasesController.formatAlias = function(alias) {
@@ -29,12 +29,12 @@
         srcName: req.params.alias
       }).then(function(domainAlias) {
         if (domainAlias) {
-          res._cc.success(DomainAliasesController.formatAlias(domainAlias));
+          res.success(DomainAliasesController.formatAlias(domainAlias));
         } else {
-          res._cc.fail('Alias not found');
+          res.fail('Alias not found');
         }
       })["catch"](function(err) {
-        res._cc.fail('Unable to get alias', 500, null, err);
+        res.fail('Unable to get alias', 500, null, err);
       });
     };
 
@@ -47,18 +47,18 @@
         destDomain: req.body.domain
       };
       if (!newAlias.srcName || (_ref = newAlias.srcName, __indexOf.call(DomainAliasesController.reservedAliases, _ref) >= 0)) {
-        res._cc.fail('Requested alias is reserved');
+        res.fail('Requested alias is reserved');
         return;
       }
       DomainAlias = req.app.getModel('DomainAlias');
       DomainAlias.create(newAlias).then(function(alias) {
-        res._cc.success(DomainAliasesController.formatAlias(alias));
+        res.success(DomainAliasesController.formatAlias(alias));
       })["catch"](function(err) {
         DomainAlias.findOne().where({
           srcName: newAlias.srcName
         }).then(function(alias) {
           if (alias) {
-            res._cc.fail('The alias is already registered');
+            res.fail('The alias is already registered');
             throw false;
           }
           return DomainAlias.findOne().where({
@@ -68,14 +68,14 @@
           });
         }).then(function(alias) {
           if (alias) {
-            res._cc.fail('The domain is already registered');
+            res.fail('The domain is already registered');
             throw false;
           } else {
             throw err;
           }
         })["catch"](function(err) {
           if (err) {
-            res._cc.fail('Error creating alias', 500, null, err);
+            res.fail('Error creating alias', 500, null, err);
           }
         });
       });
@@ -84,7 +84,7 @@
     DomainAliasesController.deleteAlias = function(req, res) {
       var DomainAlias, _ref;
       if (!req.params.alias || (_ref = req.params.alias, __indexOf.call(DomainAliasesController.reservedAliases, _ref) >= 0)) {
-        res._cc.fail('Requested alias is reserved');
+        res.fail('Requested alias is reserved');
         return;
       }
       DomainAlias = req.app.getModel('DomainAlias');
@@ -93,24 +93,24 @@
       }).then(function(alias) {
         var currentUser;
         if (!alias) {
-          res._cc.fail('Alias not found');
+          res.fail('Alias not found');
           throw false;
         }
         currentUser = req.app.get('user');
         if (currentUser.id !== alias.customerId && !currentUser.isAdmin) {
-          res._cc.fail('You are not the owner of this alias!', 401);
+          res.fail('You are not the owner of this alias!', 401);
           return;
         }
         DomainAlias.destroy({
           id: alias.id
         }).then(function() {
-          res._cc.success();
+          res.success();
         })["catch"](function(err) {
-          res._cc.fail('Unable to delete alias', 500, null, err);
+          res.fail('Unable to delete alias', 500, null, err);
         });
       })["catch"](function(err) {
         if (err) {
-          res._cc.fail('Unable to get alias', 500, null, err);
+          res.fail('Unable to get alias', 500, null, err);
         }
       });
     };
@@ -118,19 +118,19 @@
     DomainAliasesController.deleteAll = function(req, res) {
       var currentUser;
       if (req.app.get('config').env === !'development') {
-        res._cc.fail('Forbidden', 403);
+        res.fail('Forbidden', 403);
         return;
       }
       currentUser = req.app.get('user');
       if (!currentUser.isAdmin) {
-        res._cc.fail('Not authorized', 401);
+        res.fail('Not authorized', 401);
         return;
       }
       req.app.getModel('DomainAlias').query('TRUNCATE TABLE domain_aliases').then(function() {
-        res._cc.success();
+        res.success();
       })["catch"](function(err) {
         if (err) {
-          res._cc.fail('Unable to truncate aliases', 500, null, err);
+          res.fail('Unable to truncate aliases', 500, null, err);
         }
       });
     };

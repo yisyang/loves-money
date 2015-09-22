@@ -8,11 +8,11 @@ cookieParser = require('cookie-parser')
 bodyParser = require('body-parser')
 MultiViews = require('multi-views')
 config = require('./config/config.js')
-ErrorHandler = require('./core/handlers/error-handler.js')
 CorsHandler = require('./core/handlers/cors-handler.js')
 DynamicViewsHandler = require('./core/handlers/dynamic-views-handler.js')
 ModelsLoader = require('./core/loaders/waterline-loader.js')
 RoutesLoader = require('./core/loaders/routes-loader.js')
+ErrorHandler = require('./app/handlers/ErrorHandler.js')
 MiddlewaresLoader = require('./app/middlewares/loader.js')
 
 app = express()
@@ -32,14 +32,18 @@ app.use '*.coffee', (req, res, next) ->
 	return
 
 # Add static routes
-app.use "/public", express.static path.join(__dirname, 'public')
-app.use "/core", express.static path.join(__dirname, 'public', 'core')
-app.use "/vendor", express.static path.join(__dirname, 'public', 'vendor')
-app.use "/js", express.static path.join(__dirname, 'public', config.appDir, 'js')
-app.use "/css", express.static path.join(__dirname, 'public', config.appDir, 'css')
-app.use "/img", express.static path.join(__dirname, 'public', config.appDir, 'img')
-app.use "/partials", express.static path.join(__dirname, 'public', config.appDir, 'partials')
-app.use "/templates", express.static path.join(__dirname, 'public', config.appDir, 'templates')
+staticRoutes = [
+	{ src: '/public', dest: path.join(__dirname, 'public') }
+	{ src: '/core', dest: path.join(__dirname, 'public', 'core') }
+	{ src: '/vendor', dest: path.join(__dirname, 'public', 'vendor') }
+	{ src: '/js', dest: path.join(__dirname, 'public', config.appDir, 'js') }
+	{ src: '/css', dest: path.join(__dirname, 'public', config.appDir, 'css') }
+	{ src: '/img', dest: path.join(__dirname, 'public', config.appDir, 'img') }
+	{ src: '/partials', dest: path.join(__dirname, 'public', config.appDir, 'partials') }
+	{ src: '/templates', dest: path.join(__dirname, 'public', config.appDir, 'templates') }
+]
+for staticRoute in staticRoutes
+	app.use staticRoute.src, express.static staticRoute.dest
 
 # Load and save configs
 app.set 'config', config
@@ -76,16 +80,9 @@ DynamicViewsHandler.setupViews(app, [
 	path.join(__dirname, 'core', 'views', 'default')
 ])
 
-# TODO: clean up
 # Now that the views are ready, send all unresolved static routes directly to 404
-app.use "/public", ErrorHandler.displayAppError ErrorHandler.createError 'Not Found', { status: 404 }
-app.use "/core", ErrorHandler.displayAppError ErrorHandler.createError 'Not Found', { status: 404 }
-app.use "/vendor", ErrorHandler.displayAppError ErrorHandler.createError 'Not Found', { status: 404 }
-app.use "/js", ErrorHandler.displayAppError ErrorHandler.createError 'Not Found', { status: 404 }
-app.use "/css", ErrorHandler.displayAppError ErrorHandler.createError 'Not Found', { status: 404 }
-app.use "/img", ErrorHandler.displayAppError ErrorHandler.createError 'Not Found', { status: 404 }
-app.use "/partials", ErrorHandler.displayAppError ErrorHandler.createError 'Not Found', { status: 404 }
-app.use "/templates", ErrorHandler.displayAppError ErrorHandler.createError 'Not Found', { status: 404 }
+for staticRoute in staticRoutes
+	app.use staticRoute.src, ErrorHandler.displayAppError ErrorHandler.createError 'Not Found', { status: 404 }
 
 # Start logging
 app.use logger(if config.env is 'development' then 'dev' else 'tiny')

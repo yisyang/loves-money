@@ -4,7 +4,7 @@ uuid = require('uuid')
 class CustomersController
 
 	@index: (req, res) ->
-		res._cc.fail 'Invalid route, please use the UI at loves.money or view github source for valid requests.'
+		res.fail 'Invalid route, please use the UI at loves.money or view github source for valid requests.'
 		return
 
 	@createCustomer: (req, retriesLeft) ->
@@ -44,24 +44,24 @@ class CustomersController
 	@getCustomer: (req, res) ->
 		currentUser = req.app.get 'user'
 		if currentUser.id isnt req.params.id and !currentUser.isAdmin
-			res._cc.fail 'Not authorized', 401
+			res.fail 'Not authorized', 401
 			return
 
 		req.app.getModel('Customer').findOne { id: req.params.id }, (err, customer) ->
 			if err
-				res._cc.fail 'Unable to get customer', 500, null, err
+				res.fail 'Unable to get customer', 500, null, err
 				return
 			if customer
-				res._cc.success CustomersController.formatCustomer customer
+				res.success CustomersController.formatCustomer customer
 			else
-				res._cc.fail 'Customer not found'
+				res.fail 'Customer not found'
 			return
 		return
 
 	@postCustomer: (req, res) ->
 		# Verify that everythng needed have been provided
 		if !req.body.name || !req.body.email || !req.body.pwHash
-			res._cc.fail 'Missing required parameters'
+			res.fail 'Missing required parameters'
 			return
 
 		# Verify that the email address is not taken
@@ -69,7 +69,7 @@ class CustomersController
 		.then (customer) ->
 			# Existing customer found
 			if customer
-				res._cc.fail 'Customer email is already in use by an ' + (if customer.isActive then 'active' else 'inactive') + ' customer', 500
+				res.fail 'Customer email is already in use by an ' + (if customer.isActive then 'active' else 'inactive') + ' customer', 500
 				throw false
 			return
 		.then () ->
@@ -77,11 +77,11 @@ class CustomersController
 			CustomersController.createCustomer req
 		.then (customer) ->
 			# Customer successfully created
-			res._cc.success CustomersController.formatCustomer customer
+			res.success CustomersController.formatCustomer customer
 			return
 		.catch (err) ->
 			if err
-				res._cc.fail 'Error creating customer', 500, null, err
+				res.fail 'Error creating customer', 500, null, err
 			return
 
 		return
@@ -95,11 +95,11 @@ class CustomersController
 			customer.save()
 		# Soft delete successful
 		.then () ->
-			res._cc.success()
+			res.success()
 			return
 		# Deletion failed
 		.catch (err) ->
-			res._cc.fail 'Unable to delete customer', 500, null, err
+			res.fail 'Unable to delete customer', 500, null, err
 			return
 		return
 

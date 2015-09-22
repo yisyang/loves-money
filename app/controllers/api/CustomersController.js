@@ -10,7 +10,7 @@
     function CustomersController() {}
 
     CustomersController.index = function(req, res) {
-      res._cc.fail('Invalid route, please use the UI at loves.money or view github source for valid requests.');
+      res.fail('Invalid route, please use the UI at loves.money or view github source for valid requests.');
     };
 
     CustomersController.createCustomer = function(req, retriesLeft) {
@@ -46,43 +46,43 @@
       var currentUser;
       currentUser = req.app.get('user');
       if (currentUser.id !== req.params.id && !currentUser.isAdmin) {
-        res._cc.fail('Not authorized', 401);
+        res.fail('Not authorized', 401);
         return;
       }
       req.app.getModel('Customer').findOne({
         id: req.params.id
       }, function(err, customer) {
         if (err) {
-          res._cc.fail('Unable to get customer', 500, null, err);
+          res.fail('Unable to get customer', 500, null, err);
           return;
         }
         if (customer) {
-          res._cc.success(CustomersController.formatCustomer(customer));
+          res.success(CustomersController.formatCustomer(customer));
         } else {
-          res._cc.fail('Customer not found');
+          res.fail('Customer not found');
         }
       });
     };
 
     CustomersController.postCustomer = function(req, res) {
       if (!req.body.name || !req.body.email || !req.body.pwHash) {
-        res._cc.fail('Missing required parameters');
+        res.fail('Missing required parameters');
         return;
       }
       req.app.getModel('Customer').findOne().where({
         email: req.body.email
       }).then(function(customer) {
         if (customer) {
-          res._cc.fail('Customer email is already in use by an ' + (customer.isActive ? 'active' : 'inactive') + ' customer', 500);
+          res.fail('Customer email is already in use by an ' + (customer.isActive ? 'active' : 'inactive') + ' customer', 500);
           throw false;
         }
       }).then(function() {
         return CustomersController.createCustomer(req);
       }).then(function(customer) {
-        res._cc.success(CustomersController.formatCustomer(customer));
+        res.success(CustomersController.formatCustomer(customer));
       })["catch"](function(err) {
         if (err) {
-          res._cc.fail('Error creating customer', 500, null, err);
+          res.fail('Error creating customer', 500, null, err);
         }
       });
     };
@@ -95,9 +95,9 @@
         customer.isActive = false;
         return customer.save();
       }).then(function() {
-        res._cc.success();
+        res.success();
       })["catch"](function(err) {
-        res._cc.fail('Unable to delete customer', 500, null, err);
+        res.fail('Unable to delete customer', 500, null, err);
       });
     };
 

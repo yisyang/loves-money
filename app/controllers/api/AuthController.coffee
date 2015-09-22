@@ -6,7 +6,7 @@ class AuthController
 	@postLogin: (req, res) ->
 		# Verify that everythng needed have been provided
 		if !req.body.email || !req.body.pwHash
-			res._cc.fail 'Missing credentials', 401
+			res.fail 'Missing credentials', 401
 			return
 
 		# Search for customer by email and attempt to authenticate
@@ -27,11 +27,11 @@ class AuthController
 			token = jwt.sign(formatCustomer(customer), appConfig.jwt.secret, {
 				expiresInMinutes: appConfig.jwt.expire_minutes
 			})
-			res._cc.success token
+			res.success token
 			return
 		.catch (err) ->
 			if err
-				res._cc.fail 'Invalid credentials', 401, null, err
+				res.fail 'Invalid credentials', 401, null, err
 				return
 			return
 
@@ -45,7 +45,7 @@ class AuthController
 		token = jwt.sign(currentUser, appConfig.jwt.secret, {
 			expiresInMinutes: 1
 		})
-		res._cc.success token
+		res.success token
 		return
 
 # Format customer to only include public data

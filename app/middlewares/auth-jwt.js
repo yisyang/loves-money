@@ -12,7 +12,7 @@
     AuthJwt.verify = function(req, res, next) {
       var err, parsed, token, _ref, _ref1;
       if (((_ref = req.headers.authorization) != null ? _ref.substring(0, 7) : void 0) !== 'Bearer ') {
-        res._cc.fail('Invalid credentials', 401);
+        res.fail('Invalid credentials', 401);
         return;
       }
       token = (_ref1 = req.headers.authorization) != null ? _ref1.substring(7) : void 0;
@@ -23,9 +23,9 @@
       } catch (_error) {
         err = _error;
         if (err.name === 'TokenExpiredError') {
-          res._cc.fail('Token expired', 401, null, err);
+          res.fail('Token expired', 401, null, err);
         } else {
-          res._cc.fail('Invalid credentials', 401, null, err);
+          res.fail('Invalid credentials', 401, null, err);
         }
       }
     };
@@ -34,7 +34,7 @@
       var currentUser;
       currentUser = req.app.get('user');
       if (!(currentUser != null ? currentUser.isAdmin : void 0)) {
-        res._cc.fail('Not authorized', 401);
+        res.fail('Not authorized', 401);
         return;
       }
       next();

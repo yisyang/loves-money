@@ -11,7 +11,7 @@
 
     AuthController.postLogin = function(req, res) {
       if (!req.body.email || !req.body.pwHash) {
-        res._cc.fail('Missing credentials', 401);
+        res.fail('Missing credentials', 401);
         return;
       }
       req.app.getModel('Customer').findOne().where({
@@ -34,10 +34,10 @@
         token = jwt.sign(formatCustomer(customer), appConfig.jwt.secret, {
           expiresInMinutes: appConfig.jwt.expire_minutes
         });
-        res._cc.success(token);
+        res.success(token);
       })["catch"](function(err) {
         if (err) {
-          res._cc.fail('Invalid credentials', 401, null, err);
+          res.fail('Invalid credentials', 401, null, err);
           return;
         }
       });
@@ -50,7 +50,7 @@
       token = jwt.sign(currentUser, appConfig.jwt.secret, {
         expiresInMinutes: 1
       });
-      res._cc.success(token);
+      res.success(token);
     };
 
     return AuthController;
