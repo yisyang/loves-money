@@ -57,14 +57,17 @@
             routes[routeGroupIndex][route.method](route.url, routes[routeGroupIndex]['controllerMethods'][route.handler]);
           } catch (_error) {
             error = _error;
-            console.log('Error registering route ' + route.handler + '.' + route.method);
+            console.log('Error registering route');
+            console.log('- Controller: ' + controllerFileName);
+            console.log('- Method: ' + route.method);
+            console.log('- Handler: ' + route.handler);
             throw error;
           }
         }
         if (routesConfig.subdomain == null) {
           routesConfig.subdomain = '';
         }
-        app.use(routesGroup.prefix, SubdomainsHandler(routesConfig.subdomain, routesController));
+        app.use(routesGroup.prefix, SubdomainsHandler.createRoutes(routesConfig.subdomain, routesController));
       }
       return true;
     };

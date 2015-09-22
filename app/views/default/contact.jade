@@ -1,0 +1,15 @@
+extends layout
+
+block vars
+	- var pageTitle = 'Contact Us'
+	- var pageAdditionalScripts = ['/js/email-replacer.js']
+
+block content
+	h1.ui.dividing.header.center.aligned
+		i.icon.mail.lm-blue
+		= pageTitle
+	.ui.container.center.aligned
+		p
+			= 'By email: '
+			span.em-js-link
+				| scott (at loves.money)

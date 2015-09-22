@@ -7,9 +7,11 @@
 	"scripts":
 		"start": "pm2 start ./config/config-pm2.json"
 		"stop": "pm2 stop ./config/config-pm2.json --watch 0" # "npm run stop"
+		"browserify": " browserify browserify-requires.js -o public/app/js/browserify-bundle.js"
 		"test": "mocha ./test/test.js"
 		"test-ui": "mocha ./test/ui.js" # "npm run test-ui", Selenium test - currently fails
 	"dependencies":
+		"bluebird": "^2.10.0"
 		"body-parser": "^1.13.3"
 		"cookie-parser": "~1.0.1"
 		"crypto-js": "~3.1.5" # Easy access to crypto
@@ -29,7 +31,7 @@
 		"passport-jwt": "^1.1.1" # Passport JwtStrategy
 		"redis": "^0.10.3"
 		"sails-mysql": "~0.10.11" # MySQL adapter for waterline
-		"semantic-ui-css": "^2.0.8"
+		"semantic-ui-css": "^2.1.4" # Use grunt/gulp to copy stuff to public/vendor and then to build
 		"serve-favicon": "^2.2.0"
 		"uuid": "~2.0.1" # UUID generator
 		"waterline": "~0.10.18" # Cross DB ORM

@@ -1,11 +1,12 @@
 {
 	tableName: "virtual_aliases"
-	identity: "virtual_alias"
+	identity: "VirtualAlias"
 	connection: "mailServer"
 	autoCreatedAt: false
 	autoUpdatedAt: false
 	attributes:
-		domain_id:
+		domainId:
+			columnName: 'domain_id',
 			type: "integer"
 			required: true
 			index: true

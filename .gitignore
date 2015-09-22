@@ -8,11 +8,12 @@
 # Ignore IDE files
 /.idea/
 
-# Ignore NPM files
+# Ignore generated files
 /build/
+browserify-bundle.js
+# npm
 /node_modules/
-
-# Ignore bower files
+# bower
 /public/vendor/
 
 # Ignore logs and shell files from root
@@ -22,3 +23,4 @@
 
 # Ignore any other files not needed in core
 *.map
+

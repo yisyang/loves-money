@@ -1,10 +1,13 @@
 doctype html
+- var pageTitle = 'domain and email forwarding service'
+- var pageDescription = 'loves.money is a domain/email forwarding service written as a weekend mini-project'
+- var pageAdditionalScripts = []
 html.no-js
+	block vars
 	head
 		meta(charset='utf-8')
-		title= title
-		meta(name='description'
-		content='loves.money is a domain/email forwarding service written as a weekend mini-project')
+		title= 'loves.money - BETA - ' + pageTitle
+		meta(name='description' content= pageDescription)
 		meta(name='viewport', content='width=device-width')
 		meta(name='keywords', content='')
 		link(rel='stylesheet', href='/vendor/semantic-ui/semantic.css')
@@ -12,6 +15,8 @@ html.no-js
 		script(type='text/javascript' src='//code.jquery.com/jquery-2.1.4.min.js')
 		script(type='text/javascript' src='/vendor/semantic-ui/semantic.js')
 		script(type='text/javascript' src='/js/browserify-bundle.js')
+		- each pageAdditionalScript in pageAdditionalScripts
+			script(type='text/javascript' src= pageAdditionalScript)
 	body
 		script(type='text/javascript' src='/js/main.js')
 		.page-container
@@ -24,9 +29,10 @@ html.no-js
 				a(href='http://browsehappy.com/')  use a modern browser
 				|  to improve your experience.
 			<![endif]-->
+
 			.header
-			include header
-			.ui.main.text.container
+				include header
+			.content.ui.main.text.container
 				block content
 			.footer
 				include footer

@@ -1,13 +1,17 @@
-module.exports = (domain) ->
-	# Make sure domain is defined correctly
-	if typeof domain is "undefined" or domain is ''
-		throw new Error "The first parameter must be a string representing the domain"
+class CorsHandler
 
-	(req, res, next) ->
-		res.header 'Access-Control-Allow-Origin', domain
-		res.header 'Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE'
-		res.header 'Access-Control-Allow-Headers', 'Content-Type'
+	@allowDomain: (domain) ->
+		# Make sure domain is defined correctly
+		if typeof domain is "undefined" or domain is ''
+			throw new Error "The first parameter must be a string representing the domain"
 
-		next()
+		(req, res, next) ->
+			res.header 'Access-Control-Allow-Origin', domain
+			res.header 'Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE'
+			res.header 'Access-Control-Allow-Headers', 'Content-Type'
 
-		return
+			next()
+
+			return
+
+module.exports = CorsHandler

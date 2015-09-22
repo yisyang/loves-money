@@ -8,9 +8,9 @@
     var aliases, requestAlias, _ref;
     if (req.headers.host && ((_ref = req.headers.host) !== 'loves.money' && _ref !== 'www.loves.money' && _ref !== 'api.loves.money')) {
       requestAlias = req.headers.host.replace(/\.loves\.money$/, '');
-      aliases = req.app.models.alias;
+      aliases = req.app.getModel('DomainAlias');
       aliases.findOne({
-        src_name: requestAlias
+        srcName: requestAlias
       }, function(err, alias) {
         if (err) {
           err = eh.createError('Unable to get alias', {
@@ -19,10 +19,10 @@
           next(err);
         }
         if (alias) {
-          if (alias.dest_domain.match(/^(ht|f)tps?:\/\//)) {
-            res.redirect(alias.dest_domain);
+          if (alias.destDomain.match(/^(ht|f)tps?:\/\//)) {
+            res.redirect(alias.destDomain);
           } else {
-            res.redirect('http://' + alias.dest_domain);
+            res.redirect('http://' + alias.destDomain);
           }
         } else {
           err = eh.createError('Alias not found', {

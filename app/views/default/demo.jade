@@ -1,0 +1,61 @@
+extends layout
+
+block vars
+	- var pageTitle = 'Demo'
+	- var pageAdditionalScripts = ['/js/demo.js', '//cdn.jsdelivr.net/bluebird/2.9.3/bluebird.min.js', '//cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.js']
+
+block content
+	h1.ui.dividing.header.center.aligned
+		i.icon.play.circle.o.lm-blue
+		= pageTitle
+
+	p
+		| The demo page lets you add and delete aliases using the demo customer. Please note any aliases added by
+		| anyone using this page can be deleted by anyone else using this page.
+
+	.ui.container
+		.ui.pointing.menu.demo-menu
+			a.active.item(data-value='lookup')
+				i.icon.search.link
+				| Lookup
+			a.item(data-value='add')
+				i.icon.plus
+				| Add
+			a.item(data-value='remove')
+				i.icon.minus
+				| Remove
+
+		form.ui.large.form
+			.ui.stacked.segment
+				.field
+					.ui.selection.dropdown
+						input(name='alias-type', type='hidden')
+						i.dropdown.icon
+						.default.text
+							i.question.icon
+							| Alias type
+						.menu
+							.item(data-value='domain')
+								i.linkify.icon
+								| Domain alias
+							.item(data-value='email')
+								i.mail.icon
+								| Email alias
+				.field
+					.ui.left.icon.input
+						i.tag.icon
+						input(type='text', name='alias', placeholder='Alias name')
+				.field.transition.hidden
+					.ui.left.icon.input
+						i.linkify.icon
+						input(type='text', name='domain', placeholder='Domain')
+				.field.transition.hidden
+					.ui.left.icon.input
+						i.mail.icon
+						input(type='text', name='email', placeholder='E-mail address')
+				.ui.fluid.large.green.submit.button.demo-submit-button Lookup
+			.ui.error.message
+
+		.ui.black.inverted.segment
+			pre.demo-response-holder
+				| Response will be displayed here

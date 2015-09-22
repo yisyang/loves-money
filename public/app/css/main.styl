@@ -1,24 +1,59 @@
+$red = red
+$green = green
+$blue = #005779
+$lm-default-spacing = 1em
+
 body
 	background-color: #fafafa
-i.icon
-	&.green
-		color: green
-	&.red
-		color: red
+.lm-green
+	color: $green
+.lm-red
+	color: $red
+.lm-blue
+	color: $blue
+.lm-spacing-margin
+	&.above
+		margin-top: $lm-default-spacing
+		&.double
+			margin-top: 2 * $lm-default-spacing
+	&.below
+		margin-bottom: $lm-default-spacing
+		&.double
+			margin-bottom: 2 * $lm-default-spacing
 .page-container
+	position: relative
+	top: 0
+	left: 0
+	min-height: 100%
 	>.header
-		height: 5em
-	>.footer>.sticky
+		height: 7em
+		>.menu
+			height: 4em
+	>.content
+		padding-bottom: 5em
+	>.footer
 		width: 100%
+		position: absolute
+		bottom: 0
 .ui
 	&.button.vertical-align-middle
 		vertical-align: middle
 	&.footer.segment
 		margin: 2em 0 0 0
+	&.header
+		&.lm-spacing-margin
+			&.above
+				margin-top: $lm-default-spacing
+				&.double
+					margin-top: 2 * $lm-default-spacing
+			&.below
+				margin-bottom: $lm-default-spacing
+				&.double
+					margin-bottom: 2 * $lm-default-spacing
 	&.inverted
 		&.menu
 		&.segment
-			background-color: #004f6e
+			background-color: $blue
 	&.menu
 		.item img.logo
 			margin-right: 1.5em

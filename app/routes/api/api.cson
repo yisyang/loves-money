@@ -16,7 +16,7 @@
 	'viewPath': 'views/api'
 	'routesGroups': [
 		{
-			'controller': 'index.js'
+			'controller': 'IndexController.js'
 			'prefix': '/'
 			'routes': [
 				{
@@ -27,8 +27,8 @@
 			]
 		}
 		{
-			'controller': 'aliases.js'
-			'prefix': '/aliases'
+			'controller': 'DomainAliasesController.js'
+			'prefix': '/domain-aliases'
 			'routes': [
 				{
 					'method': 'get'
@@ -43,8 +43,8 @@
 			]
 		}
 		{
-			'controller': 'aliases.js'
-			'prefix': '/aliases'
+			'controller': 'DomainAliasesController.js'
+			'prefix': '/domain-aliases'
 			'middlewares': [
 				'jwt-verify'
 			]
@@ -67,7 +67,47 @@
 			]
 		}
 		{
-			'controller': 'auth.js'
+			'controller': 'EmailAliasesController.js'
+			'prefix': '/email-aliases'
+			'routes': [
+				{
+					'method': 'get'
+					'url': '/'
+					'handler': 'getIndex'
+				}
+				{
+					'method': 'get'
+					'url': '/:alias'
+					'handler': 'getAlias'
+				}
+			]
+		}
+		{
+			'controller': 'EmailAliasesController.js'
+			'prefix': '/email-aliases'
+			'middlewares': [
+				'jwt-verify'
+			]
+			'routes': [
+				{
+					'method': 'post'
+					'url': '/'
+					'handler': 'postAlias'
+				}
+				{
+					'method': 'delete'
+					'url': '/_all'
+					'handler': 'deleteAll'
+				}
+				{
+					'method': 'delete'
+					'url': '/:alias'
+					'handler': 'deleteAlias'
+				}
+			]
+		}
+		{
+			'controller': 'AuthController.js'
 			'prefix': '/auth'
 			'routes': [
 				{
@@ -78,7 +118,7 @@
 			]
 		}
 		{
-			'controller': 'auth.js'
+			'controller': 'AuthController.js'
 			'prefix': '/auth'
 			'middlewares': [
 				'jwt-verify'
@@ -92,7 +132,7 @@
 			]
 		}
 		{
-			'controller': 'customers.js'
+			'controller': 'CustomersController.js'
 			'prefix': '/customers'
 			'middlewares': [
 				'jwt-verify'
@@ -100,13 +140,13 @@
 			'routes': [
 				{
 					'method': 'get'
-					'url': '/:uuid'
+					'url': '/:id'
 					'handler': 'getCustomer'
 				}
 			]
 		}
 		{
-			'controller': 'customers.js'
+			'controller': 'CustomersController.js'
 			'prefix': '/customers'
 			'middlewares': [
 				'jwt-verify'
@@ -120,7 +160,7 @@
 				}
 				{
 					'method': 'delete'
-					'url': '/:uuid'
+					'url': '/:id'
 					'handler': 'deleteCustomer'
 				}
 			]

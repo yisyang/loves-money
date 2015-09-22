@@ -1,0 +1,24 @@
+{
+	tableName: "email_aliases"
+	identity: "EmailAlias"
+	connection: "lovesMoney"
+	attributes:
+		id:
+			type: "integer"
+			primaryKey: true
+		srcName:
+			columnName: 'src_name',
+			type: "string"
+			unique: true # Unique index
+			required: true
+			notNull: true
+		destEmail:
+			columnName: 'dest_domain',
+			type: "email"
+			unique: true # Unique index
+			required: true
+			notNull: true
+		customerId:
+			columnName: 'customer_id',
+			model: "Customer"
+}

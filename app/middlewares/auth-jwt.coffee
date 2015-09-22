@@ -6,7 +6,7 @@ class AuthJwt
 	@verify: (req, res, next) ->
 		# Get token from request header
 		if req.headers.authorization?.substring(0, 7) isnt 'Bearer '
-			res._cc.fail 'Invalid credentials', 401
+			res.fail 'Invalid credentials', 401
 			return
 		token = req.headers.authorization?.substring(7)
 
@@ -18,16 +18,16 @@ class AuthJwt
 			next()
 		catch err
 			if err.name is 'TokenExpiredError'
-				res._cc.fail 'Token expired', 401, null, err
+				res.fail 'Token expired', 401, null, err
 			else
-				res._cc.fail 'Invalid credentials', 401, null, err
+				res.fail 'Invalid credentials', 401, null, err
 		return
 
 	# Convenience middleware for guarding a route to admins only, must be used after @verify
 	@verifyAdmin: (req, res, next) ->
 		currentUser = req.app.get 'user'
 		if !currentUser?.isAdmin
-			res._cc.fail 'Not authorized', 401
+			res.fail 'Not authorized', 401
 			return
 
 		next()

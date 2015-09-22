@@ -1,0 +1,32 @@
+extends layout
+
+block vars
+	- var pageTitle = 'About Us'
+	- var pageAdditionalScripts = ['/js/email-replacer.js']
+
+block content
+	h1.ui.dividing.header.center.aligned
+		i.icon.file.text.lm-blue
+		= pageTitle
+
+	.ui.segment
+		h2 What is loves.money?
+		p loves.money is a domain and email redirection service.
+		p It can be used to forward domains:
+			ul
+				li http://you.loves.money to http://example.com
+		p or emails:
+			ul
+				li.em-js you (at loves.money) to you@example.com
+
+	.ui.segment
+		h2 How does it work?
+		p
+			| You have an email, let's say john.smith@example.com. It's a nice email address, but it just doesn't
+			| fit your personality.
+		p.em-js
+			| Now you can add an alias here and have john (at loves.money) point to john.smith@example.com. You can
+			| hand out your shiny email address john (at loves.money) to everyone, they will send emails to that
+			| new address, and you will still receive them at john.smith@example.com.
+		p
+			| The same applies to domains. john.loves.money just sounds better than johns-site.net, wouldn't you agree?
