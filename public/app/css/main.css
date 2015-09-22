@@ -29,7 +29,10 @@ body {
   min-height: 100%;
 }
 .page-container >.header {
-  height: 5em;
+  height: 7em;
+}
+.page-container >.header >.menu {
+  height: 4em;
 }
 .page-container >.content {
   padding-bottom: 5em;
