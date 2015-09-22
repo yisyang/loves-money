@@ -10,7 +10,7 @@
   EmailAliasesController = (function() {
     function EmailAliasesController() {}
 
-    EmailAliasesController.reservedAliases = ['', 'abuse', 'admin', 'administrator', 'billing', 'help', 'hostmaster', 'info', 'postmaster', 'ssl-admin', 'support', 'webmaster'];
+    EmailAliasesController.reservedAliases = ['', 'abuse', 'admin', 'administrator', 'billing', 'demo', 'dev', 'help', 'hostmaster', 'info', 'postmaster', 'qa', 'ssl-admin', 'support', 'test', 'testing', 'webmaster'];
 
     EmailAliasesController.getIndex = function(req, res) {
       res.fail('Invalid route, please use the UI at loves.money or view github source for valid requests.');

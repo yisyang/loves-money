@@ -3,7 +3,8 @@ Promise = require('bluebird')
 
 class EmailAliasesController
 
-	@reservedAliases: ['', 'abuse', 'admin', 'administrator', 'billing', 'help', 'hostmaster', 'info', 'postmaster', 'ssl-admin', 'support', 'webmaster']
+	@reservedAliases: ['', 'abuse', 'admin', 'administrator', 'billing', 'demo', 'dev', 'help', 'hostmaster', 'info',
+	                   'postmaster', 'qa', 'ssl-admin', 'support', 'test', 'testing', 'webmaster']
 
 	@getIndex: (req, res) ->
 		res.fail 'Invalid route, please use the UI at loves.money or view github source for valid requests.'

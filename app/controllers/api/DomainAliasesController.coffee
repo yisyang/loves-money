@@ -3,7 +3,8 @@ Promise = require('bluebird')
 
 class DomainAliasesController
 
-	@reservedAliases: ['', 'api', 'admin', 'administrator', 'billing', 'help', 'info', 'ssl-admin', 'support', 'www']
+	@reservedAliases: ['', 'api', 'admin', 'administrator', 'billing', 'demo', 'dev', 'help', 'info', 'qa', 'ssl-admin',
+	                   'support', 'test', 'testing', 'www']
 
 	@getIndex: (req, res) ->
 		res.fail 'Invalid route, please use the UI at loves.money or view github source for valid requests.'

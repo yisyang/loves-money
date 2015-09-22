@@ -10,7 +10,7 @@
   DomainAliasesController = (function() {
     function DomainAliasesController() {}
 
-    DomainAliasesController.reservedAliases = ['', 'api', 'admin', 'administrator', 'billing', 'help', 'info', 'ssl-admin', 'support', 'www'];
+    DomainAliasesController.reservedAliases = ['', 'api', 'admin', 'administrator', 'billing', 'demo', 'dev', 'help', 'info', 'qa', 'ssl-admin', 'support', 'test', 'testing', 'www'];
 
     DomainAliasesController.getIndex = function(req, res) {
       res.fail('Invalid route, please use the UI at loves.money or view github source for valid requests.');
