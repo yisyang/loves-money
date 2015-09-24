@@ -10,6 +10,26 @@ body {
 .lm-blue {
   color: #005779;
 }
+.lm-blue.button {
+  color: #fff;
+  background-color: #005779;
+  box-shadow: none !important;
+}
+.lm-blue.button:hover {
+  color: #005779;
+  background-color: transparent;
+  box-shadow: 0 0 0 2px #005779 inset !important;
+}
+.lm-blue.button.inverted {
+  color: #005779;
+  background-color: transparent;
+  box-shadow: 0 0 0 2px #005779 inset !important;
+}
+.lm-blue.button.inverted:hover {
+  color: #fff;
+  background-color: #005779;
+  box-shadow: none !important;
+}
 .lm-spacing-margin.above {
   margin-top: 1em;
 }
@@ -28,13 +48,18 @@ body {
   left: 0;
   min-height: 100%;
 }
-.page-container >.header {
-  height: 7em;
+.page-container >.header .computer.only.row {
+  height: 3.5em;
+  margin-bottom: 2em;
 }
-.page-container >.header >.menu {
-  height: 4em;
+.page-container >.header .computer.only.row >.menu {
+  height: 3.5em;
+}
+.page-container >.header .mobile.only.row .sidebar-toggler {
+  padding-left: 2em;
 }
 .page-container >.content {
+  margin-top: 2em;
   padding-bottom: 5em;
 }
 .page-container >.footer {
@@ -45,8 +70,10 @@ body {
 .ui.button.vertical-align-middle {
   vertical-align: middle;
 }
-.ui.footer.segment {
-  margin: 2em 0 0 0;
+.ui.grid >.page-footer {
+  margin: 2em 0 0 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 .ui.header.lm-spacing-margin.above {
   margin-top: 1em;

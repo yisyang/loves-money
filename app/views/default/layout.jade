@@ -8,7 +8,7 @@ html.no-js
 		meta(charset='utf-8')
 		title= 'loves.money - BETA - ' + pageTitle
 		meta(name='description' content= pageDescription)
-		meta(name='viewport', content='width=device-width')
+		meta(name='viewport', content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1')
 		meta(name='keywords', content='')
 		link(rel='stylesheet', href='/vendor/semantic-ui/semantic.css')
 		link(rel='stylesheet', href='/css/main.css')
@@ -19,7 +19,11 @@ html.no-js
 			script(type='text/javascript' src= pageAdditionalScript)
 	body
 		script(type='text/javascript' src='/js/main.js')
-		.page-container
+
+		.ui.sidebar.inverted.vertical.menu
+			include menu-items
+
+		.pusher.page-container
 			// IE unsupported message
 			<!--[if lt IE 9]>
 			p.browsehappy

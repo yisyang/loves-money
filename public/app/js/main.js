@@ -4,6 +4,9 @@
 
     /* Initialize */
     $('.ui.dropdown').dropdown();
+    $('.ui.button.sidebar-toggler').on('click', function() {
+      return $('.ui.sidebar').sidebar('toggle');
+    });
 
     /* Helpers */
     window.LM.showError = function(msg) {
