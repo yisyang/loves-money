@@ -1,16 +1,8 @@
-.ui.fixed.inverted.five.item.menu
-	a.header.item(href='//loves.money')
-		i.icon.home
-		| Home
-	a.header.item(href='//loves.money/demo')
-		i.icon.play.circle.o
-		| Demo
-	a.header.item(href='//loves.money/pricing')
-		i.icon.dollar
-		| Pricing
-	a.header.item(href='//loves.money/about')
-		i.icon.file.text
-		| About
-	a.header.item(href='//loves.money/contact')
-		i.icon.mail
-		| Contact
+.ui.one.column.grid
+	.computer.only.tablet.only.row.column
+		.ui.fixed.inverted.five.item.menu
+			include menu-items
+	.mobile.only.row
+		.ui.lm-blue.launch.right.attached.fixed.button.sidebar-toggler
+			i.icon.sidebar
+			span.text Menu

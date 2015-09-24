@@ -4,10 +4,12 @@ $(document).ready () ->
 
 	$('.ui.dropdown').dropdown()
 
+	$('.ui.button.sidebar-toggler').on 'click', () ->
+		$('.ui.sidebar').sidebar('toggle')
 
 	### Helpers ###
 
-	# Needs clean up... but will do for now
+	# For showing errors on the UI
 	window.LM.showError = (msg) ->
 		$('div.lm-error-modal').remove()
 		errorModal = $('<div>')
